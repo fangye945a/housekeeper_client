@@ -5,10 +5,6 @@
         <file>pictures/social-dropbox.png</file>
         <file>pictures/wifi未连接.png</file>
         <file>pictures/编辑.png</file>
-        <file>pictures/当地.png</file>
-        <file>pictures/当地_fill.png</file>
-        <file>pictures/导航.png</file>
-        <file>pictures/地址.png</file>
         <file>pictures/短信.png</file>
         <file>pictures/断开链接.png</file>
         <file>pictures/多语言.png</file>
@@ -56,5 +52,13 @@
         <file>pictures/主页.png</file>
         <file>pictures/返回.png</file>
         <file>pictures/返回_green.png</file>
+        <file>pictures/上一页.png</file>
+        <file>pictures/下一页.png</file>
+        <file>pictures/登录成功.png</file>
+        <file>pictures/登录中.png</file>
+        <file>pictures/定位成功.png</file>
+        <file>pictures/定位中.png</file>
+        <file>pictures/总线检测中.png</file>
+        <file>pictures/总线正常.png</file>
     </qresource>
 </RCC>

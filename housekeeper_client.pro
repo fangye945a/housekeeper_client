@@ -6,6 +6,8 @@
 
 QT       += core gui
 QT       += network
+QT       += serialport
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = housekeeper_client
@@ -24,9 +26,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        housekeeperclient.cpp
+        housekeeperclient.cpp \
+    detect_connect.cpp
 
-HEADERS  += housekeeperclient.h
+HEADERS  += housekeeperclient.h \
+    detect_connect.h
 
 FORMS    += housekeeperclient.ui
 
