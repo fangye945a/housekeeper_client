@@ -57,7 +57,7 @@ background-color: rgba(0, 0, 0, 100);
        <widget class="QLabel" name="label">
         <property name="styleSheet">
          <string notr="true">color: rgb(255, 255,255);
-font: 75 16pt &quot;Microsoft YaHei UI&quot;;</string>
+font: 75 14pt &quot;Microsoft YaHei UI&quot;;</string>
         </property>
         <property name="text">
          <string>USB连接状态 </string>
@@ -112,7 +112,7 @@ font: 75 16pt &quot;Microsoft YaHei UI&quot;;</string>
        <widget class="QLabel" name="label_2">
         <property name="styleSheet">
          <string notr="true">color: rgb(255, 255,255);
-font: 75 16pt &quot;Microsoft YaHei UI&quot;;</string>
+font: 75 14pt &quot;Microsoft YaHei UI&quot;;</string>
         </property>
         <property name="text">
          <string>当前网络状态 </string>
@@ -229,12 +229,12 @@ QPushButton:hover
        </spacer>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,4">
         <item>
          <widget class="QLabel" name="label_3">
           <property name="styleSheet">
            <string notr="true">color: rgb(255, 255,255);
-font: 75 16pt &quot;Microsoft YaHei UI&quot;;</string>
+font: 75 14pt &quot;Microsoft YaHei UI&quot;;</string>
           </property>
           <property name="text">
            <string>当前时间 </string>
@@ -245,19 +245,19 @@ font: 75 16pt &quot;Microsoft YaHei UI&quot;;</string>
          <widget class="QLabel" name="now_time">
           <property name="minimumSize">
            <size>
-            <width>200</width>
+            <width>225</width>
             <height>30</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>200</width>
+            <width>225</width>
             <height>30</height>
            </size>
           </property>
           <property name="styleSheet">
            <string notr="true">color: rgb(255, 255,255);
-font: 75 16pt &quot;Microsoft YaHei UI&quot;;</string>
+font: 75 14pt &quot;Microsoft YaHei UI&quot;;</string>
           </property>
           <property name="text">
            <string>2019-04-06 13:24:00</string>
@@ -666,6 +666,12 @@ font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
               </item>
               <item>
                <widget class="QStackedWidget" name="download_usage">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"/>
                 </property>
@@ -673,34 +679,176 @@ font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
                  <number>0</number>
                 </property>
                 <widget class="QWidget" name="page_3">
-                 <widget class="QLabel" name="label_7">
-                  <property name="geometry">
-                   <rect>
-                    <x>320</x>
-                    <y>120</y>
-                    <width>54</width>
-                    <height>12</height>
-                   </rect>
-                  </property>
-                  <property name="text">
-                   <string>1</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,11,1">
+                  <item>
+                   <spacer name="horizontalSpacer_16">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>50</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_7">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">border-image: url(:/new/prefix1/pictures/setup1.jpg);</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_17">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>50</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
                 </widget>
                 <widget class="QWidget" name="page_4">
-                 <widget class="QLabel" name="label_6">
-                  <property name="geometry">
-                   <rect>
-                    <x>280</x>
-                    <y>130</y>
-                    <width>54</width>
-                    <height>12</height>
-                   </rect>
-                  </property>
-                  <property name="text">
-                   <string>2</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="1,10,1">
+                  <item>
+                   <spacer name="horizontalSpacer_18">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>55</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_6">
+                    <property name="styleSheet">
+                     <string notr="true">border-image: url(:/new/prefix1/pictures/setup2.jpg);</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_19">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>54</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="page_9">
+                 <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="1,10,1">
+                  <item>
+                   <spacer name="horizontalSpacer_20">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>55</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_19">
+                    <property name="styleSheet">
+                     <string notr="true">border-image: url(:/new/prefix1/pictures/setup3.jpg);</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_21">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>54</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="page_10">
+                 <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,10,1">
+                  <item>
+                   <spacer name="horizontalSpacer_22">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>55</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_20">
+                    <property name="styleSheet">
+                     <string notr="true">border-image: url(:/new/prefix1/pictures/setup4.jpg);</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_23">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>54</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
                 </widget>
                </widget>
               </item>
@@ -1210,7 +1358,7 @@ font: 25 24pt &quot;Microsoft YaHei UI Light&quot;;</string>
                      <enum>QLCDNumber::Filled</enum>
                     </property>
                     <property name="value" stdset="0">
-                     <double>299.100000000000023</double>
+                     <double>299.000000000000000</double>
                     </property>
                     <property name="intValue" stdset="0">
                      <number>299</number>

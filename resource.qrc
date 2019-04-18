@@ -60,5 +60,9 @@
         <file>pictures/定位中.png</file>
         <file>pictures/总线检测中.png</file>
         <file>pictures/总线正常.png</file>
+        <file>pictures/setup1.jpg</file>
+        <file>pictures/setup2.jpg</file>
+        <file>pictures/setup3.jpg</file>
+        <file>pictures/setup4.jpg</file>
     </qresource>
 </RCC>
