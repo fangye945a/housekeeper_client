@@ -1047,8 +1047,8 @@ QPushButton:hover
            <widget class="QComboBox" name="comboBox">
             <property name="geometry">
              <rect>
-              <x>410</x>
-              <y>160</y>
+              <x>400</x>
+              <y>150</y>
               <width>121</width>
               <height>31</height>
              </rect>
@@ -1462,45 +1462,143 @@ background-color: rgba(255, 255, 255, 220);
             <item row="0" column="0">
              <widget class="QTabWidget" name="tabWidget">
               <property name="currentIndex">
-               <number>6</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
                 <string>终端参数</string>
                </attribute>
-               <widget class="QTableView" name="tableView">
-                <property name="geometry">
-                 <rect>
-                  <x>20</x>
-                  <y>60</y>
-                  <width>911</width>
-                  <height>371</height>
-                 </rect>
-                </property>
-               </widget>
-               <widget class="QComboBox" name="comboBox_2">
-                <property name="geometry">
-                 <rect>
-                  <x>130</x>
-                  <y>20</y>
-                  <width>131</width>
-                  <height>31</height>
-                 </rect>
-                </property>
-               </widget>
-               <widget class="QLabel" name="label_5">
-                <property name="geometry">
-                 <rect>
-                  <x>40</x>
-                  <y>30</y>
-                  <width>72</width>
-                  <height>15</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>参数类型</string>
-                </property>
-               </widget>
+               <layout class="QGridLayout" name="gridLayout_9" rowstretch="1,9" rowminimumheight="0,0">
+                <item row="0" column="0">
+                 <layout class="QHBoxLayout" name="horizontalLayout_28" stretch="7,16,4">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_27" stretch="1,4">
+                    <item>
+                     <widget class="QLabel" name="label_5">
+                      <property name="styleSheet">
+                       <string notr="true">font: 25 14pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                      </property>
+                      <property name="text">
+                       <string>参数类型:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="param_type">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color: rgb(216, 216, 216);
+font: 25 14pt &quot;Microsoft YaHei UI Light&quot;;
+</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>电压相关信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>设备相关信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>TCP连接信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>周期信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>状态信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>波特率信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>GPS信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>GSM信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>历史信息</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>版本信息</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_24">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pushButton_6">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton:enabled
+{
+	border-radius: 10px;
+	color: rgb(255, 255, 255);
+	font: 75 14pt &quot;Microsoft YaHei UI&quot;;
+	background-color: rgba(47, 148, 255, 255);
+}
+
+QPushButton:hover
+{
+	border-radius: 10px;
+	color: rgb(255, 255, 255);
+	font: 75 14pt &quot;Microsoft YaHei UI&quot;;
+	background-color: rgba(47, 148, 255, 220);
+}</string>
+                    </property>
+                    <property name="text">
+                     <string>更新参数</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QTableWidget" name="params_tableWidget"/>
+                </item>
+               </layout>
               </widget>
               <widget class="QWidget" name="tab_2">
                <attribute name="title">
@@ -1519,7 +1617,7 @@ background-color: rgba(255, 255, 255, 220);
                  <string>参数设置</string>
                 </property>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>250</x>
@@ -1541,7 +1639,7 @@ background-color: rgba(255, 255, 255, 220);
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>250</x>
@@ -1563,7 +1661,7 @@ background-color: rgba(255, 255, 255, 220);
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>250</x>
@@ -1585,7 +1683,7 @@ background-color: rgba(255, 255, 255, 220);
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>240</x>
@@ -1661,7 +1759,7 @@ background-color: rgba(255, 255, 255, 220);
                  <string>CAN数据发送</string>
                 </property>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>730</x>
@@ -1700,7 +1798,7 @@ background-color: rgba(255, 255, 255, 220);
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>30</x>
@@ -1722,7 +1820,7 @@ background-color: rgba(255, 255, 255, 220);
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>300</x>
@@ -1744,7 +1842,7 @@ background-color: rgba(255, 255, 255, 220);
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <property name="geometry">
                  <rect>
                   <x>200</x>

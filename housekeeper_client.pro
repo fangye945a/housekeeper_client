@@ -27,10 +27,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         housekeeperclient.cpp \
-    detect_connect.cpp
+    detect_connect.cpp \
+    cJSON.c
 
 HEADERS  += housekeeperclient.h \
-    detect_connect.h
+    detect_connect.h \
+    cJSON.h
 
 FORMS    += housekeeperclient.ui
 
