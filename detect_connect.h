@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QProcess>
 #include <QDebug>
+#include <QSerialPortInfo>
+#include <QSerialPort>
 
 class detect_connect : public QThread
 {
@@ -16,6 +18,7 @@ public:
     void stop();
 
 signals:
+    void send_adb_driver_state();
     void send_usb_connect_state(bool state);
     void send_network_connect_state(bool state);
 private:

@@ -14,7 +14,15 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     detect_thread = new detect_connect(); //创建检测线程
     connect(detect_thread, SIGNAL(send_usb_connect_state(bool)), this, SLOT(update_usb_connect_state(bool)));
     connect(detect_thread, SIGNAL(send_network_connect_state(bool)), this, SLOT(update_network_connect_state(bool)));
+    connect(detect_thread, SIGNAL(send_adb_driver_state()), this, SLOT(update_adb_driver_state()));
     detect_thread->start(); //开启连接检测线程
+
+    ui->download_hardware->setEnabled(false);
+
+    tcp_client = new QTcpSocket(this);
+    connect(tcp_client, SIGNAL(readyRead()), this, SLOT(recv_tcp_data())); //收到TCP服务端数据
+    connect(tcp_client, SIGNAL(connected()), this, SLOT(tcp_client_connected())); //TCP连接成功
+    connect(tcp_client, SIGNAL(disconnected()), this, SLOT(tcp_client_disconnected())); //TCP连接断开
 }
 
 HouseKeeperClient::~HouseKeeperClient()
@@ -76,6 +84,63 @@ void HouseKeeperClient::update_network_connect_state(bool state)
     }
 }
 
+void HouseKeeperClient::ParseAppData(QByteArray package_data) //解析数据
+{
+
+}
+
+void HouseKeeperClient::recv_tcp_data()
+{
+    QByteArray package_data;   //一包数据
+    int buff_index = 0;
+    int flag = 0;  //记录{}标志
+    char ch = 0;    //记录临时字符
+    while(tcp_client->bytesAvailable() > 0 ) //如果有数据
+    {
+        tcp_client->read(&ch, 1);   //读一个字节
+        if (ch == '{') //遇到json对象
+        {
+            flag++;
+        }
+        else if (ch == '}' && flag > 0)
+        {
+            flag--;
+        }
+
+        if (flag == 0) //若没有遇到json对象或者已读完一个json对象
+        {
+            if (buff_index > 8 && buff_index < MAX_MESSAGE_LEN-1) //判断是否有有效数据,json对象长度至少为9bytes才做处理 {"a":"b"}
+            {
+                package_data += QByteArray(&ch, 1) ; //读取数据
+                ParseAppData(package_data); //解析数据
+                package_data.clear();
+                buff_index = 0;  //下标清零
+            }
+        }
+        else
+        {
+            if (buff_index < MAX_MESSAGE_LEN-1) //json对象超出长度
+                package_data += QByteArray(&ch, 1) ; //读取数据
+            else  //直接丢掉该包数据
+            {
+                buff_index = 0;
+                flag = 0;       //重新接受数据
+                package_data.clear();
+            }
+        }
+    }
+}
+
+void HouseKeeperClient::tcp_client_connected()
+{
+    qDebug()<<"connect success!!";
+}
+
+void HouseKeeperClient::tcp_client_disconnected()
+{
+    qDebug()<<"tcp_client disconnect!!";
+}
+
 void HouseKeeperClient::update_usb_connect_state(bool state)
 {
     if (!state)
@@ -88,6 +153,50 @@ void HouseKeeperClient::update_usb_connect_state(bool state)
         ui->usb_connect_state->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/连接.png);"));
         usb_connect_state = 1;
     }
+
+    QString msg = "请选择端口 ";
+    int i = 0;
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        QSerialPort serial;
+        serial.setPort(info);
+        if(serial.open(QIODevice::ReadWrite))
+        {
+
+            if(   info.description().contains(QString("Quectel USB DM Port"))
+               || info.description().contains(QString("QDLoader"))     )
+            {
+                if(i != 0)
+                    msg+="、";
+                 msg += info.portName();
+                 i++;
+            }
+            serial.close();
+        }
+    }
+    msg += " 进行固件烧写";
+    if(i == 0)
+    {
+        msg = "设备未连接！！";
+        ui->download_com_help->setText(msg);
+        ui->download_hardware->setEnabled(false);
+        ui->download_com_help->setStyleSheet(QString("color: rgb(255, 0, 0);font: 25 16pt \"Microsoft YaHei UI Light\";"));
+    }
+    else
+    {
+        ui->download_hardware->setEnabled(true);
+        ui->download_com_help->setStyleSheet(QString("color: rgb(70, 171, 15);font: 25 16pt \"Microsoft YaHei UI Light\";"));
+    }
+
+    ui->download_com_help->setText(msg);
+}
+
+void HouseKeeperClient::update_adb_driver_state()
+{
+    QString msg = "请确认ADB驱动已安装，并以管理员权限运行本程序！";
+    ui->download_hardware->setEnabled(false);
+    ui->download_com_help->setText(msg);
+    ui->download_com_help->setStyleSheet(QString("color: rgb(255, 0, 0);font: 25 16pt \"Microsoft YaHei UI Light\";"));
 }
 
 void HouseKeeperClient::on_return_home_clicked()
