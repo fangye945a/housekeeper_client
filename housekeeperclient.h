@@ -175,12 +175,15 @@ public:
     void parse_can_data(cJSON *root);                      //解析CAN数据
     void parse_json_data(cJSON *root);                     //解析JSON数据
     void parse_tcp_data(cJSON *root);                      //解析TCP数据
+    void parse_get_param_reply(cJSON *root);
+    void parse_set_param_reply(cJSON *root);
+
     QTableWidgetItem *create_item(QString msg);
 public slots:
     void update_time();                     //更新时间
-    void update_usb_connect_state(bool state);  //更新USB连接状态
+    void update_usb_connect_state(int state);  //更新USB连接状态
     void update_adb_driver_state();  //更新ADB驱动状态
-    void update_network_connect_state(bool state);      //更新网络连接状态
+    void update_network_connect_state(int state);      //更新网络连接状态
 
     void recv_tcp_data();
     void tcp_client_connected();
@@ -209,6 +212,20 @@ private slots:
 
     void on_param_type_currentIndexChanged(int index);
 
+    void on_ini_filename_currentIndexChanged(int index);
+
+    void on_selection_name_currentIndexChanged(const QString &arg1);
+
+    void on_key_name_currentTextChanged(const QString &arg1);
+
+    void on_param_read_clicked();
+
+    void on_param_set_clicked();
+
+    void on_tabWidget_tabBarClicked(int index);
+
+    void on_get_all_params_clicked();
+
 private:
     Ui::HouseKeeperClient *ui;
     QTimer *update_time_timer;
@@ -217,6 +234,7 @@ private:
     QTcpSocket *tcp_client;
     unsigned char network_connect_state;
     unsigned char usb_connect_state;
+    unsigned char tcp_connect_flag;        //TCP连接状态
     ALL_PARAMS all_params;
 };
 

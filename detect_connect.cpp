@@ -5,12 +5,15 @@ detect_connect::detect_connect()
     flagRunning = true;
     usb_process = NULL;
     network_process = NULL;
+    usb_state = 0;
+    net_state = 0;
 }
 
 void detect_connect::run()
 {
     qDebug()<<"Create pthread!!";
     QString usb_cmd = "adb devices";
+    QString usb_port_forward = "adb forward tcp:10086 tcp:10086";
     QString network_cmd = "ping www.baidu.com -n 2 -w 500";
     while(flagRunning)
     {
@@ -33,11 +36,20 @@ void detect_connect::run()
         {
             if(result.contains(QString("device\r\n\r\n")))
             {
-                emit send_usb_connect_state(true);  //连接正常
+                if(usb_state == 0)  //断开后首次连接成功
+                {
+                    usb_process->start(usb_port_forward);   //断开映射
+                    usb_process->waitForFinished();
+                    QString result = usb_process->readAll();
+                    qDebug()<<"usb_port_forward result:"<<result;
+                }
+                emit send_usb_connect_state(1);  //连接正常
+                usb_state = 1;
             }
             else
             {
-                emit send_usb_connect_state(false);  //连接正常
+                emit send_usb_connect_state(0);  //连接断开
+                usb_state = 0;
             }
         }
 

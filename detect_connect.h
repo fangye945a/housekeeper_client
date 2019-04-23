@@ -19,12 +19,14 @@ public:
 
 signals:
     void send_adb_driver_state();
-    void send_usb_connect_state(bool state);
-    void send_network_connect_state(bool state);
+    void send_usb_connect_state(int state);
+    void send_network_connect_state(int state);
 private:
     bool flagRunning;   //运行标志
     QProcess *usb_process;
     QProcess *network_process;
+    int usb_state;
+    int net_state;
 };
 
 #endif // DETECT_CONNECT_H

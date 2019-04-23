@@ -64,5 +64,6 @@
         <file>pictures/setup2.jpg</file>
         <file>pictures/setup3.jpg</file>
         <file>pictures/setup4.jpg</file>
+        <file>pictures/TCP连接.png</file>
     </qresource>
 </RCC>
