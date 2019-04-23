@@ -293,7 +293,7 @@ font: 75 14pt &quot;Microsoft YaHei UI&quot;;</string>
         <string notr="true">background-color: rgba(0,0,0,0);</string>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page">
         <layout class="QGridLayout" name="gridLayout_2" rowstretch="1,8,1" columnstretch="1,8,1">
@@ -447,7 +447,7 @@ QPushButton:hover
 }</string>
                  </property>
                  <property name="text">
-                  <string>终端ID录入</string>
+                  <string>设备出厂配置</string>
                  </property>
                 </widget>
                </item>
@@ -986,128 +986,373 @@ background-color: rgba(255, 255, 255, 220);
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <widget class="QPushButton" name="pushButton">
-            <property name="geometry">
-             <rect>
-              <x>230</x>
-              <y>330</y>
-              <width>180</width>
-              <height>60</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton:enabled
+           <layout class="QVBoxLayout" name="verticalLayout_9" stretch="1,1,1,1,1,1,1,1,1">
+            <item>
+             <spacer name="verticalSpacer_13">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>46</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_38" stretch="1,2,2">
+              <item>
+               <spacer name="horizontalSpacer_36">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_35" stretch="1,2">
+                <item>
+                 <widget class="QLabel" name="label_8">
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(0, 0, 0);
+font: 25 24pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                  </property>
+                  <property name="text">
+                   <string>产品ID:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="comboBox">
+                  <property name="styleSheet">
+                   <string notr="true">font: 24pt &quot;宋体&quot;;
+color: rgb(12, 158, 255);
+background-color: rgb(231, 231, 231);</string>
+                  </property>
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Unknow</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>TBOX-X3</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_37">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_14">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>46</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_39" stretch="1,1,2,1">
+              <item>
+               <spacer name="horizontalSpacer_43">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_33">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(0, 0, 0);
+font: 25 24pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                </property>
+                <property name="text">
+                 <string>SIM卡号码：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_6">
+                <property name="styleSheet">
+                 <string notr="true">font: 24pt &quot;宋体&quot;;
+color: rgb(12, 158, 255);</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_44">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_17">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>45</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_37" stretch="1,3,1">
+              <item>
+               <spacer name="horizontalSpacer_38">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_34">
+                <item>
+                 <widget class="QLabel" name="label_9">
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(0, 0, 0);
+font: 25 24pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                  </property>
+                  <property name="text">
+                   <string>设备ID:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit">
+                  <property name="styleSheet">
+                   <string notr="true">font: 24pt &quot;宋体&quot;;
+color: rgb(12, 158, 255);</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_42">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_15">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>46</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_36" stretch="2,1,1,1,2">
+              <item>
+               <spacer name="horizontalSpacer_39">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="get_id_setting">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton:enabled
 {
 	border-radius: 10px;
 	color: rgb(255, 255, 255);
-	font: 75 22pt &quot;Microsoft YaHei UI&quot;;
+	font: 75 16pt &quot;Microsoft YaHei UI&quot;;
 	background-color: rgba(255, 112, 30, 255);
 }
 QPushButton:hover
 {
 	border-radius: 10px;
 	color: rgb(255, 255, 255);
-	font: 75 22pt &quot;Microsoft YaHei UI&quot;;
+	font: 75 16pt &quot;Microsoft YaHei UI&quot;;
 	background-color: rgba(255, 112, 30, 220);
 }</string>
-            </property>
-            <property name="text">
-             <string>读取ID</string>
-            </property>
-           </widget>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="geometry">
-             <rect>
-              <x>570</x>
-              <y>330</y>
-              <width>180</width>
-              <height>60</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton:enabled
+                </property>
+                <property name="text">
+                 <string>获取ID配置</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_40">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="change_id_setting">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton:enabled
 {
 	border-radius: 10px;
 	color: rgb(255, 255, 255);
-	font: 75 22pt &quot;Microsoft YaHei UI&quot;;
+	font: 75 16pt &quot;Microsoft YaHei UI&quot;;
 	background-color: rgba(255, 112, 30, 255);
 }
 QPushButton:hover
 {
 	border-radius: 10px;
 	color: rgb(255, 255, 255);
-	font: 75 22pt &quot;Microsoft YaHei UI&quot;;
+	font: 75 16pt &quot;Microsoft YaHei UI&quot;;
 	background-color: rgba(255, 112, 30, 220);
 }</string>
-            </property>
-            <property name="text">
-             <string>修改ID</string>
-            </property>
-           </widget>
-           <widget class="QComboBox" name="comboBox">
-            <property name="geometry">
-             <rect>
-              <x>400</x>
-              <y>150</y>
-              <width>121</width>
-              <height>31</height>
-             </rect>
-            </property>
-            <item>
-             <property name="text">
-              <string>Unknow</string>
-             </property>
+                </property>
+                <property name="text">
+                 <string>修改ID配置</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_41">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
             <item>
-             <property name="text">
-              <string>TBOX-X3</string>
-             </property>
+             <spacer name="verticalSpacer_16">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>46</height>
+               </size>
+              </property>
+             </spacer>
             </item>
-           </widget>
-           <widget class="QLabel" name="label_8">
-            <property name="geometry">
-             <rect>
-              <x>310</x>
-              <y>150</y>
-              <width>91</width>
-              <height>41</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(0, 0, 0);
-font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
-            </property>
-            <property name="text">
-             <string>产品ID:</string>
-            </property>
-           </widget>
-           <widget class="QLabel" name="label_9">
-            <property name="geometry">
-             <rect>
-              <x>310</x>
-              <y>220</y>
-              <width>91</width>
-              <height>41</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(0, 0, 0);
-font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
-            </property>
-            <property name="text">
-             <string>设备ID:</string>
-            </property>
-           </widget>
-           <widget class="QLineEdit" name="lineEdit">
-            <property name="geometry">
-             <rect>
-              <x>400</x>
-              <y>220</y>
-              <width>241</width>
-              <height>31</height>
-             </rect>
-            </property>
-           </widget>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -1462,7 +1707,7 @@ background-color: rgba(255, 255, 255, 220);
             <item row="0" column="0">
              <widget class="QTabWidget" name="tabWidget">
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab">
                <attribute name="title">
@@ -1492,9 +1737,9 @@ background-color: rgba(255, 255, 255, 220);
                        </sizepolicy>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">background-color: rgb(216, 216, 216);
-font: 25 14pt &quot;Microsoft YaHei UI Light&quot;;
-</string>
+                       <string notr="true">font: 14pt &quot;宋体&quot;;
+color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
                       </property>
                       <item>
                        <property name="text">
@@ -1894,7 +2139,7 @@ font: 75 16pt &quot;微软雅黑&quot;;</string>
                   <item>
                    <widget class="QLabel" name="key_name_help">
                     <property name="text">
-                     <string> </string>
+                     <string/>
                     </property>
                    </widget>
                   </item>
@@ -1965,7 +2210,7 @@ font: 75 16pt &quot;微软雅黑&quot;;</string>
 color: rgb(12, 158, 255);</string>
                       </property>
                       <property name="text">
-                       <string>89860410111881227102</string>
+                       <string/>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
@@ -2111,7 +2356,7 @@ QPushButton:hover
                 <item row="11" column="0">
                  <widget class="QLabel" name="param_help">
                   <property name="text">
-                   <string> </string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
