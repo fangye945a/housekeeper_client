@@ -16,6 +16,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QTcpSocket>
 #include <QTableWidgetItem>
+#include <QMessageBox>
 
 #include "detect_connect.h"
 #include "cJSON.h"
@@ -117,6 +118,24 @@ typedef struct _HISTORY_INFO
     unsigned int 		total_acc_on_time;				//< 总通电ACC ON时长
 }HISTORY_INFO;
 
+typedef struct _APP_VERSION
+{
+    char enable_flag;	//使能标志
+    char version[16];	//版本号
+    char app_name[32];	//应用名称
+}APP_VERSION;
+
+typedef struct _VERSION_INFO
+{
+    char hw_version[16];			//硬件版本
+    char fs_version[16];			//固件版本(文件系统版本)
+    char service_version[16];      //服务程序版本
+    char housekeeper_version[16];  //应用管理程序版本
+    char mcu_version[16];			//单片机程序版本
+    char other_version[64];		//其他程序版本(如PLC)
+    APP_VERSION app_version[5];			//应用程序版本
+}VERSION_INFO;
+
 enum
 {
     ENUM_VOLTAGE_INFO,
@@ -142,6 +161,7 @@ typedef struct _ALL_PARAMS
     GPS_INFO gps_info;
     GSM_INFO gsm_info;
     HISTORY_INFO history_info;
+    VERSION_INFO version_info;
 }ALL_PARAMS;
 
 enum
@@ -177,6 +197,8 @@ public:
     void parse_tcp_data(cJSON *root);                      //解析TCP数据
     void parse_get_param_reply(cJSON *root);
     void parse_set_param_reply(cJSON *root);
+    void parse_get_factory_param_reply(cJSON *root);
+    void parse_set_factory_param_reply(cJSON *root);
 
     QTableWidgetItem *create_item(QString msg);
 public slots:
@@ -213,6 +235,8 @@ private slots:
     void on_param_type_currentIndexChanged(int index);
 
     void on_ini_filename_currentIndexChanged(int index);
+    void on_get_id_setting_clicked();
+
 
     void on_selection_name_currentIndexChanged(const QString &arg1);
 
@@ -226,9 +250,17 @@ private slots:
 
     void on_get_all_params_clicked();
 
+    void on_change_id_setting_clicked();
+
+    void on_dev_id_factory_textEdited(const QString &arg1);
+
+    void on_sim_number_factory_textEdited(const QString &arg1);
+
 private:
     Ui::HouseKeeperClient *ui;
+    int remind_time;                //剩余时间
     QTimer *update_time_timer;
+    QTimer *factory_test_timer;     //出厂测试定时器
     detect_connect *detect_thread;
     QProcess *process;
     QTcpSocket *tcp_client;

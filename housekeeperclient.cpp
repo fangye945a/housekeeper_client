@@ -17,6 +17,10 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     connect(update_time_timer, SIGNAL(timeout()), this, SLOT(update_time()));
     update_time_timer->start(1000);
 
+    factory_test_timer = new QTimer(this);
+    connect(factory_test_timer, SIGNAL(timeout()), this, SLOT(factory_test()));
+
+
     detect_thread = new detect_connect(); //创建检测线程
     connect(detect_thread, SIGNAL(send_usb_connect_state(int)), this, SLOT(update_usb_connect_state(int)));
     connect(detect_thread, SIGNAL(send_network_connect_state(int)), this, SLOT(update_network_connect_state(int)));
@@ -29,6 +33,13 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     connect(tcp_client, SIGNAL(readyRead()), this, SLOT(recv_tcp_data())); //收到TCP服务端数据
     connect(tcp_client, SIGNAL(connected()), this, SLOT(tcp_client_connected())); //TCP连接成功
     connect(tcp_client, SIGNAL(disconnected()), this, SLOT(tcp_client_disconnected())); //TCP连接断开
+
+    ui->tabWidget->setTabEnabled(2,false);
+    ui->tabWidget->setTabEnabled(3,false);
+    ui->tabWidget->setTabEnabled(4,false);
+    ui->tabWidget->setTabEnabled(5,false);
+    ui->tabWidget->setTabEnabled(6,false);
+    ui->tabWidget->setTabEnabled(7,false);
 }
 
 HouseKeeperClient::~HouseKeeperClient()
@@ -313,7 +324,44 @@ void HouseKeeperClient::show_params(int data)
         }break;
         case ENUM_VERSION_INFO:
         {
+            int item_rows = 6;
+            for(int i=0;i<5;i++)
+            {
+                if(all_params.version_info.app_version[i].enable_flag)
+                    item_rows++;
+            }
 
+            ui->params_tableWidget->setRowCount(item_rows);
+            ui->params_tableWidget->setColumnCount(2);
+            ui->params_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);    //将表格设置为禁止编辑
+            ui->params_tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);   //将表格设置为整行选择
+            ui->params_tableWidget->setHorizontalHeaderLabels(QStringList()<<"参数名称"<<"参数值");
+
+            ui->params_tableWidget->setItem(0,0,create_item(QString("终端固件版本")));
+            ui->params_tableWidget->setItem(0,1,create_item(QString(all_params.version_info.fs_version)));
+            ui->params_tableWidget->setItem(1,0,create_item(QString("终端硬件版本")));
+            ui->params_tableWidget->setItem(1,1,create_item(QString(all_params.version_info.hw_version)));
+            ui->params_tableWidget->setItem(2,0,create_item(QString("MCU程序版本")));
+            ui->params_tableWidget->setItem(2,1,create_item(QString(all_params.version_info.mcu_version)));
+            ui->params_tableWidget->setItem(3,0,create_item(QString("服务程序版本")));
+            ui->params_tableWidget->setItem(3,1,create_item(QString(all_params.version_info.service_version)));
+            ui->params_tableWidget->setItem(4,0,create_item(QString("应用管理程序版本")));
+            ui->params_tableWidget->setItem(4,1,create_item(QString(all_params.version_info.housekeeper_version)));
+            ui->params_tableWidget->setItem(5,0,create_item(QString("其他程序版本(如PLC)")));
+            ui->params_tableWidget->setItem(5,1,create_item(QString(all_params.version_info.other_version)));
+
+            for(int i=0;i<5;i++)
+            {
+                if(all_params.version_info.app_version[i].enable_flag)
+                {
+                    QString param_type = "应用程序[";
+                    param_type += QString(all_params.version_info.app_version[i].app_name);
+                    param_type += "]版本";
+                    ui->params_tableWidget->setItem(6+i,0,create_item(param_type));
+                    ui->params_tableWidget->setItem(6+i,1,create_item(QString(all_params.version_info.app_version[i].version)));
+                }
+            }
+            ui->params_tableWidget->horizontalHeader()->setStretchLastSection(true);    //填充整行
         }break;
         default:break;
     }
@@ -530,6 +578,55 @@ void HouseKeeperClient::parse_all_params_data(cJSON *root)
         if(tmp)
             all_params.history_info.total_on_time = tmp->valueint;
     }
+    cJSON *version_info = cJSON_GetObjectItem(root, "version_info");
+    if(version_info)
+    {
+        qDebug()<<"version_info = "<<cJSON_PrintUnformatted(version_info);
+        cJSON *tmp = cJSON_GetObjectItem(version_info,"fs_version");
+        if(tmp)
+            strncpy(all_params.version_info.fs_version, tmp->valuestring, 15);
+        tmp = cJSON_GetObjectItem(version_info,"hw_version");
+        if(tmp)
+            strncpy(all_params.version_info.hw_version, tmp->valuestring, 15);
+        tmp = cJSON_GetObjectItem(version_info,"mcu_version");
+        if(tmp)
+            strncpy(all_params.version_info.mcu_version, tmp->valuestring, 15);
+        tmp = cJSON_GetObjectItem(version_info,"service_version");
+        if(tmp)
+            strncpy(all_params.version_info.service_version, tmp->valuestring, 15);
+        tmp = cJSON_GetObjectItem(version_info,"housekeeper_version");
+        if(tmp)
+            strncpy(all_params.version_info.housekeeper_version, tmp->valuestring, 15);
+        tmp = cJSON_GetObjectItem(version_info,"other_version");
+        if(tmp)
+            strncpy(all_params.version_info.other_version, tmp->valuestring, 63);
+
+        cJSON *apps_name = cJSON_GetObjectItem(version_info,"apps_name");
+        cJSON *apps_version = cJSON_GetObjectItem(version_info,"apps_version");
+        if(apps_name && apps_name->type == cJSON_Array &&
+           apps_version && apps_version->type == cJSON_Array )
+        {
+            if(cJSON_GetArraySize(apps_name) == cJSON_GetArraySize(apps_version))
+            {
+                int size = cJSON_GetArraySize(apps_name);
+                if(size > 5)
+                    size = 5;
+
+                for(int i=0; i<size; i++)
+                {
+                    all_params.version_info.app_version[i].enable_flag = 1;
+
+                    tmp = cJSON_GetArrayItem(apps_name,i);
+                    strncpy(all_params.version_info.app_version[i].app_name, tmp->valuestring, 31);
+
+                    tmp = cJSON_GetArrayItem(apps_version,i);
+                    strncpy(all_params.version_info.app_version[i].version, tmp->valuestring, 15);
+                }
+
+            }
+        }
+
+    }
 }
 
 void HouseKeeperClient::parse_can_data(cJSON *root)
@@ -595,6 +692,66 @@ void HouseKeeperClient::parse_set_param_reply(cJSON *root)
         ui->param_help->setText("关键字段信息有误");
 }
 
+void HouseKeeperClient::parse_get_factory_param_reply(cJSON *root)
+{
+    qDebug()<<"parse_get_factory_param_reply:"<<cJSON_PrintUnformatted(root);
+    cJSON *result = cJSON_GetObjectItem(root,"result");
+    if(result && result->type == cJSON_Number)
+    {
+        if(result->valueint == 0)
+        {
+            QMessageBox::information(this,"提示","获取配置信息失败");
+        }
+        else
+        {
+            cJSON *factory_params = cJSON_GetObjectItem(root,"factory_params");
+            if(factory_params && factory_params->type == cJSON_Array)
+            {
+                int size = cJSON_GetArraySize(factory_params);
+                qDebug()<<"factory_params size = "<<size;
+                int exist_flag = 0;
+                char *tmp = cJSON_GetArrayItem(factory_params,0)->valuestring;
+                for(int i=0; i<ui->product_id_factory->count(); i++)
+                {
+                    if(ui->product_id_factory->itemText(i) == QString(tmp))
+                    {
+                        exist_flag = 1;
+                        ui->product_id_factory->setCurrentIndex(i);
+                    }
+                }
+                if(exist_flag == 0)
+                {
+                    ui->product_id_factory->setCurrentText(QString(tmp));
+                }
+                tmp = cJSON_GetArrayItem(factory_params,1)->valuestring;
+                ui->sim_number_factory->setText(QString(tmp));
+                tmp = cJSON_GetArrayItem(factory_params,2)->valuestring;
+                ui->dev_id_factory->setText(QString(tmp));
+            }
+        }
+    }
+}
+
+void HouseKeeperClient::parse_set_factory_param_reply(cJSON *root)
+{
+    qDebug()<<"parse_get_param_reply:"<<cJSON_PrintUnformatted(root);
+    cJSON *result = cJSON_GetObjectItem(root,"result");
+    if(result && result->type == cJSON_Number)
+    {
+        if(result->valueint == 0)
+        {
+            QMessageBox::information(this,"提示","获取配置信息失败");
+        }
+        else
+        {
+            QMessageBox::information(this,"提示","配置成功");
+            ui->product_id_factory->setCurrentIndex(0);
+            ui->sim_number_factory->clear();
+            ui->dev_id_factory->clear();
+        }
+    }
+}
+
 void HouseKeeperClient::update_time()
 {
     QString time_str = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
@@ -651,6 +808,14 @@ void HouseKeeperClient::ParseAppData(QByteArray package_data) //解析数据
             else if( !strcmp(data_type->valuestring, "param_set_reply") )   //设置参数回复
             {
                 parse_set_param_reply(root);
+            }
+            else if( !strcmp(data_type->valuestring, "factory_params_get_reply"))
+            {
+                parse_get_factory_param_reply(root);
+            }
+            else if( !strcmp(data_type->valuestring, "factory_params_set_reply"))
+            {
+                parse_set_factory_param_reply(root);
             }
             else
             {
@@ -854,7 +1019,7 @@ void HouseKeeperClient::on_factory_test_clicked()
 void HouseKeeperClient::on_dev_manage_clicked()
 {
     ui->stackedWidget->setCurrentIndex(DEVICE_MANAGE);
-    on_param_type_currentIndexChanged(ui->param_type->currentIndex());
+    ui->param_type->setCurrentIndex(9);
 }
 
 void HouseKeeperClient::on_upgrade_package_clicked()
@@ -1246,6 +1411,9 @@ void HouseKeeperClient::on_param_read_clicked()
         qDebug("get_param = %s",data);
         tcp_client->write(data, strlen(data));
         cJSON_Delete(root);
+    }else
+    {
+        QMessageBox::information(this,"提示","未与终端建立通信,请等待建立通信后重试！建立通信后左上角USB连接状态图标将变为浅绿色。");
     }
 }
 
@@ -1264,6 +1432,9 @@ void HouseKeeperClient::on_param_set_clicked()
         qDebug("set_param = %s",data);
         tcp_client->write(data, strlen(data));
         cJSON_Delete(root);
+    }else
+    {
+        QMessageBox::information(this,"提示","未与终端建立通信,请等待建立通信后重试！建立通信后左上角USB连接状态图标将变为浅绿色。");
     }
 }
 
@@ -1285,5 +1456,154 @@ void HouseKeeperClient::on_get_all_params_clicked()
         qDebug("ask_params = %s",data);
         tcp_client->write(data, strlen(data));
         cJSON_Delete(root);
+    }else
+    {
+        QMessageBox::information(this,"提示","未与终端建立通信,请等待建立通信后重试！建立通信后左上角USB连接状态图标将变为浅绿色。");
     }
 }
+
+void HouseKeeperClient::on_get_id_setting_clicked()
+{
+    if(tcp_connect_flag)
+    {
+        cJSON *root = cJSON_CreateObject();
+        cJSON_AddStringToObject(root,"data_type","factory_params_get");  //获取出厂配置参数
+        int nums = 3;
+        cJSON_AddNumberToObject(root,"param_nums", nums);  //参数个数
+        cJSON *ini_array = cJSON_CreateArray();
+        cJSON *selection_array = cJSON_CreateArray();
+        cJSON *key_array = cJSON_CreateArray();
+
+        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/remote_manage.ini"));
+        cJSON_AddItemToArray(selection_array, cJSON_CreateString("OTHER_CFG"));
+        cJSON_AddItemToArray(key_array, cJSON_CreateString("product_id"));
+
+        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/zlcfg.ini"));
+        cJSON_AddItemToArray(selection_array, cJSON_CreateString("TCPC_CFG_THEME"));
+        cJSON_AddItemToArray(key_array, cJSON_CreateString("sim_num"));
+
+        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/syscfg.ini"));
+        cJSON_AddItemToArray(selection_array, cJSON_CreateString("INIT_PARAM_THEME"));
+        cJSON_AddItemToArray(key_array, cJSON_CreateString("dev_id"));
+
+        cJSON_AddItemToObject(root, "ini_name", ini_array);     //添加数组
+        cJSON_AddItemToObject(root, "selection_name", selection_array);
+        cJSON_AddItemToObject(root, "key_name", key_array);
+
+        char *data = cJSON_PrintUnformatted(root);
+        qDebug("factory_params_get = %s",data);
+        tcp_client->write(data, strlen(data));
+        cJSON_Delete(root);
+    }else
+    {
+        QMessageBox::information(this,"提示","未与终端建立通信,请等待建立通信后重试！建立通信后左上角USB连接状态图标将变为浅绿色。");
+    }
+}
+
+void HouseKeeperClient::on_change_id_setting_clicked()
+{
+    QString tmp = ui->dev_id_factory->text();
+    int len = tmp.length();
+    for(int i=0; i<len; i++)
+    {
+        if( (tmp.at(i) >= '0' && tmp.at(i) <= '9') ||
+            (tmp.at(i) >= 'A' && tmp.at(i) <= 'F'))
+        {
+            continue;
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","设备ID必须为16进制字符串(0-9,A-F)");
+            return;
+        }
+    }
+    if(len != 16)
+    {
+        QMessageBox::warning(this,"提示","设备ID长度必须为16位");
+        return;
+    }
+
+    tmp = ui->sim_number_factory->text();
+    len = tmp.length();
+    for(int i=0; i<len; i++)
+    {
+        if( (tmp.at(i) >= '0' && tmp.at(i) <= '9') )
+        {
+            continue;
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","SIM卡号码必须由0-9之间的数字组成");
+            return;
+        }
+    }
+    if(len != 11)
+    {
+        QMessageBox::warning(this,"提示","SIM卡号码长度必须为11位");
+        return;
+    }
+
+    if(tcp_connect_flag)
+    {
+        cJSON *root = cJSON_CreateObject();
+        cJSON_AddStringToObject(root,"data_type","factory_params_set");  //设置出厂配置参数
+        int nums = 3;
+        cJSON_AddNumberToObject(root,"param_nums", nums);  //参数个数
+        cJSON *ini_array = cJSON_CreateArray();
+        cJSON *selection_array = cJSON_CreateArray();
+        cJSON *key_array = cJSON_CreateArray();
+        cJSON *data_value = cJSON_CreateArray();
+
+        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/remote_manage.ini"));
+        cJSON_AddItemToArray(selection_array, cJSON_CreateString("OTHER_CFG"));
+        cJSON_AddItemToArray(key_array, cJSON_CreateString("product_id"));
+        cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->product_id_factory->currentText().trimmed().toLocal8Bit().data()));
+
+        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/zlcfg.ini"));
+        cJSON_AddItemToArray(selection_array, cJSON_CreateString("TCPC_CFG_THEME"));
+        cJSON_AddItemToArray(key_array, cJSON_CreateString("sim_num"));
+        cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->sim_number_factory->text().trimmed().toLocal8Bit().data()));
+
+        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/syscfg.ini"));
+        cJSON_AddItemToArray(selection_array, cJSON_CreateString("INIT_PARAM_THEME"));
+        cJSON_AddItemToArray(key_array, cJSON_CreateString("dev_id"));
+        cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->dev_id_factory->text().trimmed().toLocal8Bit().data()));
+
+        cJSON_AddItemToObject(root, "ini_name", ini_array);     //添加数组
+        cJSON_AddItemToObject(root, "selection_name", selection_array);
+        cJSON_AddItemToObject(root, "key_name", key_array);
+        cJSON_AddItemToObject(root, "data_value", data_value);
+
+        char *data = cJSON_PrintUnformatted(root);
+        qDebug("factory_params_set = %s",data);
+        tcp_client->write(data, strlen(data));
+        cJSON_Delete(root);
+    }
+    else
+    {
+        QMessageBox::information(this,"提示","未与终端建立通信,请等待建立通信后重试！建立通信后左上角USB连接状态图标将变为浅绿色。");
+        //QMessageBox::warning(this,"提示","TCP未连接，请等待建立连接后再试");
+    }
+}
+
+void HouseKeeperClient::on_dev_id_factory_textEdited(const QString &arg1)
+{
+    QString devid;
+    if(arg1.length() > 16)
+    {
+        devid = arg1.mid(0,16).toUpper();
+    }else
+        devid = arg1.toUpper();
+    ui->dev_id_factory->setText(devid);
+}
+
+void HouseKeeperClient::on_sim_number_factory_textEdited(const QString &arg1)
+{
+    QString phone_number;
+    if(arg1.length() > 11)
+    {
+        phone_number = arg1.mid(0,11);
+        ui->sim_number_factory->setText(phone_number);
+    }
+}
+
