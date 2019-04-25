@@ -65,5 +65,9 @@
         <file>pictures/setup3.jpg</file>
         <file>pictures/setup4.jpg</file>
         <file>pictures/TCP连接.png</file>
+        <file>pictures/ACC点火.png</file>
+        <file>pictures/电池.png</file>
+        <file>pictures/开盖.png</file>
+        <file>pictures/天线.png</file>
     </qresource>
 </RCC>

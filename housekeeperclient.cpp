@@ -6,7 +6,7 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     ui(new Ui::HouseKeeperClient)
 {
     ui->setupUi(this);
-    this->setWindowTitle("二代中联盒子助手v1.1");
+    this->setWindowTitle("二代中联盒子助手v1.2");
     network_connect_state = 0;
     usb_connect_state = 0;
     tcp_connect_flag = 0;        //TCP连接状态

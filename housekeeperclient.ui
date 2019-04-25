@@ -1386,7 +1386,11 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>GPS天线检测        (GPS天线工作正常)</string>
+                  <string>GPS天线检测    (GPS天线工作正常)</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resource.qrc">
+                   <normaloff>:/new/prefix1/pictures/天线.png</normaloff>:/new/prefix1/pictures/天线.png</iconset>
                  </property>
                 </widget>
                </item>
@@ -1396,7 +1400,11 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>ACC测试           (设定时间内ACC检测状态有变化)</string>
+                  <string>ACC测试        (设定时间内ACC检测状态有变化)</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resource.qrc">
+                   <normaloff>:/new/prefix1/pictures/ACC点火.png</normaloff>:/new/prefix1/pictures/ACC点火.png</iconset>
                  </property>
                 </widget>
                </item>
@@ -1406,7 +1414,11 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>开盖测试           (设定时间内开盖检测状态有变化)</string>
+                  <string>开盖测试       (设定时间内开盖检测状态有变化)</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resource.qrc">
+                   <normaloff>:/new/prefix1/pictures/开盖.png</normaloff>:/new/prefix1/pictures/开盖.png</iconset>
                  </property>
                 </widget>
                </item>
@@ -1416,7 +1428,7 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>GPS定位检测     (设定时间内GPS定位成功)</string>
+                  <string>GPS定位检测    (设定时间内GPS定位成功)</string>
                  </property>
                  <property name="icon">
                   <iconset resource="resource.qrc">
@@ -1433,7 +1445,7 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>平台登录检测    (设定时间内登录平台成功)</string>
+                  <string>平台登录检测   (设定时间内登录平台成功)</string>
                  </property>
                  <property name="icon">
                   <iconset resource="resource.qrc">
@@ -1450,7 +1462,7 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>CAN总线检测     (CAN总线能够正常收发数据)</string>
+                  <string>CAN总线检测    (CAN总线能够正常收发数据)</string>
                  </property>
                  <property name="icon">
                   <iconset resource="resource.qrc">
@@ -1464,7 +1476,11 @@ background-color: rgba(255, 255, 255, 220);
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="text">
-                  <string>电池电压检测       (电压≥3.8V)</string>
+                  <string>电池电压检测   (电压≥3.8V)</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resource.qrc">
+                   <normaloff>:/new/prefix1/pictures/电池.png</normaloff>:/new/prefix1/pictures/电池.png</iconset>
                  </property>
                 </widget>
                </item>
