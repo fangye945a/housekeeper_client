@@ -174,6 +174,43 @@ enum
     UPGRADE_PACKAGE
 };
 
+
+typedef struct _FACTORY_TEST
+{
+   int gps_enable;
+   int gps_result;
+
+   int login_enable;
+   int login_result;
+
+   int can_bus_enable;  //CAN总线
+   int can_bus_result;
+
+   int lid_enable;
+   int lid_result;
+
+   int acc_enable;
+   int acc_result;
+
+   int battery_enable;
+   int battery_result;
+
+   int gps_antena_enable;
+   int gps_antena_result;
+}FACTORY_TEST_ST;
+
+enum
+{
+    GPS_DETECT,
+    GPS_ANTENA_DETECT,
+    BATTERY_DETECT,
+    ACC_TEST,
+    LID_TEST,
+    CAN_BUS_DETECT,
+    LOGIN_DETECT
+};
+
+
 namespace Ui {
 class HouseKeeperClient;
 }
@@ -199,10 +236,16 @@ public:
     void parse_set_param_reply(cJSON *root);
     void parse_get_factory_param_reply(cJSON *root);
     void parse_set_factory_param_reply(cJSON *root);
+    void add_time_log_to_test_result(QString str);
+    int init_test_options();        //初始化检测选项
+    void set_factory_test_state(int type);   //设置测试结果
+    void all_params_proc_for_test();   //出厂测试参数处理
+    void candata_proc_for_test();   //出厂测试can数据处理
 
     QTableWidgetItem *create_item(QString msg);
 public slots:
     void update_time();                     //更新时间
+    void factory_test_check();                //出厂测试检测
     void update_usb_connect_state(int state);  //更新USB连接状态
     void update_adb_driver_state();  //更新ADB驱动状态
     void update_network_connect_state(int state);      //更新网络连接状态
@@ -235,8 +278,8 @@ private slots:
     void on_param_type_currentIndexChanged(int index);
 
     void on_ini_filename_currentIndexChanged(int index);
-    void on_get_id_setting_clicked();
 
+    void on_get_id_setting_clicked();
 
     void on_selection_name_currentIndexChanged(const QString &arg1);
 
@@ -256,6 +299,10 @@ private slots:
 
     void on_sim_number_factory_textEdited(const QString &arg1);
 
+    void on_factory_test_bt_clicked();
+
+    void on_factory_test_clear_clicked();
+
 private:
     Ui::HouseKeeperClient *ui;
     int remind_time;                //剩余时间
@@ -268,6 +315,7 @@ private:
     unsigned char usb_connect_state;
     unsigned char tcp_connect_flag;        //TCP连接状态
     ALL_PARAMS all_params;
+    FACTORY_TEST_ST factory_test_state;       //出厂测试状态
 };
 
 #endif // HOUSEKEEPERCLIENT_H

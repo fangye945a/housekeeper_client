@@ -38,3 +38,5 @@ FORMS    += housekeeperclient.ui
 
 RESOURCES += \
     resource.qrc
+
+RC_FILE = myico.rc

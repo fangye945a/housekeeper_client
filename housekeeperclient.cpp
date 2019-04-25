@@ -6,7 +6,7 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     ui(new Ui::HouseKeeperClient)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("二代中联盒子助手v1.1");
     network_connect_state = 0;
     usb_connect_state = 0;
     tcp_connect_flag = 0;        //TCP连接状态
@@ -18,7 +18,7 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     update_time_timer->start(1000);
 
     factory_test_timer = new QTimer(this);
-    connect(factory_test_timer, SIGNAL(timeout()), this, SLOT(factory_test()));
+    connect(factory_test_timer, SIGNAL(timeout()), this, SLOT(factory_test_check()));
 
 
     detect_thread = new detect_connect(); //创建检测线程
@@ -752,22 +752,293 @@ void HouseKeeperClient::parse_set_factory_param_reply(cJSON *root)
     }
 }
 
+void HouseKeeperClient::add_time_log_to_test_result(QString str)  //添加时间到测试结果打印
+{
+    QString time_str = "[";
+    time_str += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    time_str += "] ";
+    time_str += str;
+    ui->factory_test_result->append(time_str);
+}
+
+int HouseKeeperClient::init_test_options()
+{
+    memset(&factory_test_state, 0, sizeof(factory_test_state));    //清空测试检测状态
+    remind_time = ui->remind_time_spinBox->value(); //获取设置值
+    int ret = 0;
+    if(ui->checkBox_acc->isChecked())
+    {
+        ret = 1;
+        factory_test_state.acc_enable = 1;
+    }
+    if(ui->checkBox_can_bus->isChecked())
+    {
+        ret = 1;
+        factory_test_state.can_bus_enable = 1;
+    }
+    if(ui->checkBox_battery->isChecked())
+    {
+        ret = 1;
+        factory_test_state.battery_enable = 1;
+    }
+    if(ui->checkBox_gps->isChecked())
+    {
+        ret = 1;
+        factory_test_state.gps_enable = 1;
+    }
+    if(ui->checkBox_gps_antena->isChecked())
+    {
+        ret = 1;
+        factory_test_state.gps_antena_enable = 1;
+    }
+    if(ui->checkBox_lid->isChecked())
+    {
+        ret = 1;
+        factory_test_state.lid_enable = 1;
+    }
+    if(ui->checkBox_login->isChecked())
+    {
+        ret = 1;
+        factory_test_state.login_enable = 1;
+    }
+    return ret;
+}
+
+void HouseKeeperClient::set_factory_test_state(int type)
+{
+    switch(type)
+    {
+    case GPS_DETECT:        //GPS检测
+    {
+        if(factory_test_state.gps_enable)
+        {
+            factory_test_state.gps_result = 1;
+            QString msg = "GPS定位成功! 经度:";
+            msg += QString::number(all_params.gps_info.longitude);
+            msg+= " 纬度:";
+            msg+= QString::number(all_params.gps_info.latitude);
+            msg+= " 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    case GPS_ANTENA_DETECT:
+    {
+        if(factory_test_state.gps_antena_enable)
+        {
+            factory_test_state.gps_antena_result = 1;
+            QString msg = "GPS天线功能正常！";
+            msg+= " 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    case BATTERY_DETECT:
+    {
+        if(factory_test_state.battery_enable)
+        {
+            factory_test_state.battery_result = 1;
+            QString msg = "电池电压值正常！";
+            msg+= " 电池电压:";
+            msg+= QString::number(all_params.volage_info.battery_voltage);
+            msg+= "V 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    case ACC_TEST:
+    {
+        if(factory_test_state.acc_enable)
+        {
+            factory_test_state.acc_result = 1;
+            QString msg = "ACC检测功能正常！";
+            msg+= " 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    case LID_TEST:
+    {
+        if(factory_test_state.lid_enable)
+        {
+            factory_test_state.lid_result = 1;
+            QString msg = "开盖检测功能正常！";
+            msg+= " 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    case CAN_BUS_DETECT:
+    {
+        if(factory_test_state.can_bus_enable)
+        {
+            factory_test_state.can_bus_result = 1;
+            QString msg = "CAN总线功能正常！";
+            msg+= " 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    case LOGIN_DETECT:
+    {
+        if(factory_test_state.login_enable)
+        {
+            factory_test_state.login_result = 1;
+            QString msg = "登陆平台成功！";
+            msg+= " 耗时:";
+            msg+= QString::number(ui->remind_time_spinBox->value() - remind_time);
+            msg+= "秒";
+            add_time_log_to_test_result(msg);
+        }
+    }break;
+    default:break;
+    }
+}
+
+void HouseKeeperClient::all_params_proc_for_test()
+{
+    static int pre_acc_state = 0;
+    static int pre_lid_state = 0;
+    if(!factory_test_timer->isActive())     //未开始测试不进行处理
+    {
+        pre_acc_state = 0;
+        pre_lid_state = 0;
+        return;
+    }
+    if(all_params.state_info.login_state == 1 && factory_test_state.login_result == 0)  //登陆状态检测
+        set_factory_test_state(LOGIN_DETECT);
+
+    if(all_params.state_info.gps_state == 1 && factory_test_state.gps_result == 0)  //GPS定位检测
+        set_factory_test_state(GPS_DETECT);
+
+    if(all_params.state_info.gps_antena == 1 && factory_test_state.gps_antena_result == 0)  //GPS天线检测 1正常 2天线未连接 3天线故障
+        set_factory_test_state(GPS_ANTENA_DETECT);
+
+    if(all_params.volage_info.battery_voltage >= 3.8 && factory_test_state.battery_result == 0)  //电池电压大于等于3.8V
+        set_factory_test_state(BATTERY_DETECT);
+
+    if(pre_acc_state != all_params.state_info.acc_state && pre_acc_state != 0)      //ACC检测测试成功
+        set_factory_test_state(ACC_TEST);
+
+    if(pre_lid_state != all_params.state_info.liq_state && pre_lid_state != 0)      //开盖检测测试成功
+        set_factory_test_state(LID_TEST);
+
+    pre_acc_state = all_params.state_info.acc_state;
+    pre_lid_state = all_params.state_info.liq_state;
+}
+
+void HouseKeeperClient::candata_proc_for_test()
+{
+    if(!factory_test_timer->isActive())     //未开始测试不进行处理
+        return;
+
+    if(factory_test_state.can_bus_result == 0)
+        set_factory_test_state(CAN_BUS_DETECT);
+}
+
 void HouseKeeperClient::update_time()
 {
     QString time_str = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     ui->now_time->setText(time_str);
+    if(all_params.state_info.dial_state)
+        ui->net_status->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/网络正常.png);"));
+    else
+        ui->net_status->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/网络断开.png);"));
+}
+
+void HouseKeeperClient::factory_test_check()    //参数检测
+{
+    if(remind_time > 0)
+    {
+        if(factory_test_state.acc_enable == factory_test_state.acc_result &&
+           factory_test_state.battery_enable == factory_test_state.battery_result &&
+           factory_test_state.gps_antena_enable == factory_test_state.gps_antena_result &&
+           factory_test_state.can_bus_enable == factory_test_state.can_bus_enable &&
+           factory_test_state.gps_enable == factory_test_state.gps_result  &&
+           factory_test_state.lid_enable == factory_test_state.lid_result &&
+           factory_test_state.login_enable == factory_test_state.login_result)  //测试成功
+        {
+            add_time_log_to_test_result(QString("出厂测试成功"));
+            if(ui->factory_test_bt->text()=="结束测试")
+                on_factory_test_bt_clicked();    //结束测试
+            QMessageBox::information(this,"提示","出厂测试成功");
+            if(ui->checkBox_autoclean->isChecked())  //如果开启自动清空保存
+            {
+                on_factory_test_clear_clicked(); //清空并保持测试结果
+            }
+            return;
+        }
+        remind_time--;
+        ui->remind_time_label->setText(QString::number(remind_time));
+    }
+    else            //失败，测试超时
+    {
+        if(ui->factory_test_bt->text()=="结束测试")
+            on_factory_test_bt_clicked();    //结束测试
+
+        QString msg;
+        if(factory_test_state.acc_enable && (!factory_test_state.acc_result))
+        {
+            msg = "ACC测试失败！";
+            add_time_log_to_test_result(msg);
+        }
+        if(factory_test_state.gps_enable && (!factory_test_state.gps_result))
+        {
+            msg = "GPS定位失败！";
+            add_time_log_to_test_result(msg);
+        }
+        if(factory_test_state.gps_antena_enable && (!factory_test_state.gps_antena_result))
+        {
+            msg = "GPS天线未连接！";
+            add_time_log_to_test_result(msg);
+        }
+        if(factory_test_state.battery_enable && (!factory_test_state.battery_result) )
+        {
+            msg = "电池电压检测失败！电压值:";
+            msg += QString::number(all_params.volage_info.battery_voltage);
+            msg += "V";
+            add_time_log_to_test_result(msg);
+        }
+        if(factory_test_state.lid_enable && (!factory_test_state.lid_result) )
+        {
+            msg = "开盖测试失败！";
+            add_time_log_to_test_result(msg);
+        }
+        if(factory_test_state.can_bus_enable && (!factory_test_state.can_bus_result) )
+        {
+            msg = "CAN总线检测失败！";
+            add_time_log_to_test_result(msg);
+        }
+        if(factory_test_state.login_enable && (!factory_test_state.login_result))
+        {
+            msg = "登录平台超时！";
+            add_time_log_to_test_result(msg);
+        }
+
+        msg = "出厂测试失败！";
+        add_time_log_to_test_result(msg);
+        QMessageBox::information(this,"提示","出厂测试失败，时间超时");
+        if(ui->checkBox_autoclean->isChecked())  //如果开启自动清空保存
+        {
+            on_factory_test_clear_clicked(); //清空并保持测试结果
+        }
+    }
 }
 
 void HouseKeeperClient::update_network_connect_state(int state)
 {
     if (!state)
     {
-        ui->net_status->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/网络断开.png);"));
         network_connect_state = 0;
     }
     else
     {
-        ui->net_status->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/网络正常.png);"));
         network_connect_state = 1;
     }
 }
@@ -785,7 +1056,10 @@ void HouseKeeperClient::ParseAppData(QByteArray package_data) //解析数据
             if( !strcmp(data_type->valuestring, "PARAMS") )
             {
                 parse_all_params_data(root);
+
                 on_param_type_currentIndexChanged(ui->param_type->currentIndex());
+
+                all_params_proc_for_test();     //根据所有参数进行测试
             }
             else if(!strcmp(data_type->valuestring, "CAN"))
             {
@@ -897,6 +1171,59 @@ void HouseKeeperClient::update_usb_connect_state(int state)
         {
             tcp_client->close();
             tcp_connect_flag = 0;
+
+            if(factory_test_timer->isActive())  //测试时连接断开
+            {
+                QString msg;
+                if(factory_test_state.acc_enable && factory_test_state.acc_result == 0)
+                {
+                    msg = "ACC测试失败！";
+                    add_time_log_to_test_result(msg);
+                }
+                if(factory_test_state.gps_enable && factory_test_state.gps_result  == 0 )
+                {
+                    msg = "GPS定位失败！";
+                    add_time_log_to_test_result(msg);
+                }
+                if(factory_test_state.gps_antena_enable && factory_test_state.gps_antena_result == 0)
+                {
+                    if(all_params.state_info.gps_antena == 2)
+                        msg = "GPS天线未连接！";
+                    else
+                        msg = "GPS天线故障！";
+                    add_time_log_to_test_result(msg);
+                }
+                if(factory_test_state.battery_enable && factory_test_state.battery_result == 0 )
+                {
+                    msg = "电池电压检测失败！电压值:";
+                    msg += QString::number(all_params.volage_info.battery_voltage);
+                    msg += "V";
+                    add_time_log_to_test_result(msg);
+                }
+                if(factory_test_state.lid_enable && factory_test_state.lid_result == 0 )
+                {
+                    msg = "开盖测试失败！";
+                    add_time_log_to_test_result(msg);
+                }
+                if(factory_test_state.can_bus_enable && factory_test_state.can_bus_result == 0 )
+                {
+                    msg = "CAN总线检测失败！";
+                    add_time_log_to_test_result(msg);
+                }
+                if(factory_test_state.login_enable && factory_test_state.login_result == 0 )
+                {
+                    msg = "登录平台超时！";
+                    add_time_log_to_test_result(msg);
+                }
+                add_time_log_to_test_result(QString("出厂测试失败,USB连接断开"));
+                if(ui->factory_test_bt->text()=="结束测试")
+                    on_factory_test_bt_clicked();    //结束测试
+                QMessageBox::information(this,"提示","出厂测试失败,USB连接断开");
+                if(ui->checkBox_autoclean->isChecked())  //如果开启自动清空保存
+                {
+                    on_factory_test_clear_clicked(); //清空并保持测试结果
+                }
+            }
         }
     }
     else
@@ -916,7 +1243,14 @@ void HouseKeeperClient::update_usb_connect_state(int state)
         {
             qDebug()<<"建立TCP连接...";
             tcp_client->connectToHost("127.0.0.1", 10086, QTcpSocket::ReadWrite);
+            pre_state = state;  //记录本次状态
+            if(ui->checkBox_autotest->isChecked())  //如果开启自动测试
+            {
+                if(ui->factory_test_bt->text() == "开始测试")
+                    on_factory_test_bt_clicked();    //开始测试
+            }
         }
+
         if(cnt_connect > 5)
         {
             qDebug()<<"再次尝试建立TCP连接...";
@@ -1024,7 +1358,8 @@ void HouseKeeperClient::on_dev_manage_clicked()
 
 void HouseKeeperClient::on_upgrade_package_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(UPGRADE_PACKAGE);
+    QMessageBox::information(this,"提示","敬请期待");
+    //ui->stackedWidget->setCurrentIndex(UPGRADE_PACKAGE);
 }
 
 void HouseKeeperClient::on_param_type_currentIndexChanged(int index)
@@ -1419,6 +1754,11 @@ void HouseKeeperClient::on_param_read_clicked()
 
 void HouseKeeperClient::on_param_set_clicked()
 {
+    if(ui->param_value->text().isEmpty())
+    {
+        QMessageBox::information(this,"提示","参数值不能为空");
+        return;
+    }
     if(tcp_connect_flag)
     {
         cJSON *root = cJSON_CreateObject();
@@ -1607,3 +1947,101 @@ void HouseKeeperClient::on_sim_number_factory_textEdited(const QString &arg1)
     }
 }
 
+void HouseKeeperClient::on_factory_test_bt_clicked()    //开始测试
+{
+    if(ui->factory_test_bt->text() == "开始测试")
+    {
+        if(!init_test_options())    //参数初始化
+        {
+            QMessageBox::information(this,"提示","至少需要勾选一项测试选项才能开始测试");
+            return;
+        }
+
+        factory_test_timer->start(1000);        //开始计数
+        ui->remind_time_label->setText(QString::number(remind_time));
+        QString msg = "--------- 出厂测试 -----------\n";
+        msg += "超时时间:";
+        msg += QString::number(remind_time);
+        msg += "秒\n";
+        msg += "测试参数:";
+        if(factory_test_state.acc_enable)
+            msg += "ACC测试 ";
+        if(factory_test_state.battery_enable)
+            msg += "电池电压检测 ";
+        if(factory_test_state.gps_antena_enable)
+            msg += "GPS天线检测 ";
+        if(factory_test_state.gps_enable)
+            msg += "GPS定位检测 ";
+        if(factory_test_state.can_bus_enable)
+            msg += "CAN总线检测 ";
+        if(factory_test_state.login_enable)
+            msg += "平台登陆检测 ";
+        if(factory_test_state.lid_enable)
+            msg += "开盖测试 ";
+        ui->factory_test_result->append(msg);
+        add_time_log_to_test_result(QString("开始测试"));
+
+        QString my_style = "QPushButton:enabled \
+        {                                                               \
+            border-radius: 10px;    \
+            color: rgb(255, 255, 255);  \
+            font: 75 16pt \"Microsoft YaHei UI\"; \
+            background-color: rgba(255, 55, 29, 255);  \
+        }                                                           \
+        QPushButton:hover                           \
+        {                                                       \
+            border-radius: 10px;                        \
+            color: rgb(255, 255, 255);                     \
+            font: 75 16pt \"Microsoft YaHei UI\"; \
+            background-color: rgba(255, 55, 29, 220);  \
+        }";
+        ui->factory_test_bt->setStyleSheet(my_style);
+        ui->factory_test_bt->setText("结束测试");
+    }
+    else
+    {
+        if(factory_test_timer->isActive())  //停止定时器
+        {
+            factory_test_timer->stop();
+        }
+
+        remind_time = 0;
+        ui->remind_time_label->setText(QString::number(remind_time));
+
+
+        QString my_style = "QPushButton:enabled \
+        {                                                               \
+            border-radius: 10px;    \
+            color: rgb(255, 255, 255);  \
+            font: 75 16pt \"Microsoft YaHei UI\"; \
+            background-color: rgba(148, 206, 39, 255);  \
+        }                                                           \
+        QPushButton:hover                           \
+        {                                                       \
+            border-radius: 10px;                        \
+            color: rgb(255, 255, 255);                     \
+            font: 75 16pt \"Microsoft YaHei UI\"; \
+            background-color: rgba(148, 206, 39, 220);  \
+        }";
+        ui->factory_test_bt->setStyleSheet(my_style);
+        ui->factory_test_bt->setText("开始测试");
+    }
+}
+
+void HouseKeeperClient::on_factory_test_clear_clicked() //清空并保持测试结果
+{
+    QString record = ui->factory_test_result->toPlainText();
+    if(!record.isEmpty())   //如果记录不为空
+    {
+        QString filename = "./log/";
+        filename += QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss_");
+        filename += QString(all_params.device_info.devid);
+        filename += ".log";
+
+        QFile outFile(filename);
+        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        QTextStream save_text(&outFile);
+        save_text << record << endl;        //保存测试记录
+        ui->factory_test_result->clear();
+    }
+}
