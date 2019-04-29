@@ -6,7 +6,7 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     ui(new Ui::HouseKeeperClient)
 {
     ui->setupUi(this);
-    this->setWindowTitle("二代中联盒子助手v1.2");
+    this->setWindowTitle("二代中联盒子助手v1.3_factory");
     network_connect_state = 0;
     usb_connect_state = 0;
     tcp_connect_flag = 0;        //TCP连接状态
@@ -34,6 +34,7 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     connect(tcp_client, SIGNAL(connected()), this, SLOT(tcp_client_connected())); //TCP连接成功
     connect(tcp_client, SIGNAL(disconnected()), this, SLOT(tcp_client_disconnected())); //TCP连接断开
 
+    ui->tabWidget->setTabEnabled(1,false);  //禁掉参数设置功能
     ui->tabWidget->setTabEnabled(2,false);
     ui->tabWidget->setTabEnabled(3,false);
     ui->tabWidget->setTabEnabled(4,false);
@@ -763,8 +764,10 @@ void HouseKeeperClient::add_time_log_to_test_result(QString str)  //添加时间
 
 int HouseKeeperClient::init_test_options()
 {
+    factory_test_record_result = 0;
     memset(&factory_test_state, 0, sizeof(factory_test_state));    //清空测试检测状态
     remind_time = ui->remind_time_spinBox->value(); //获取设置值
+
     int ret = 0;
     if(ui->checkBox_acc->isChecked())
     {
@@ -968,10 +971,11 @@ void HouseKeeperClient::factory_test_check()    //参数检测
             if(ui->factory_test_bt->text()=="结束测试")
                 on_factory_test_bt_clicked();    //结束测试
             QMessageBox::information(this,"提示","出厂测试成功");
-            if(ui->checkBox_autoclean->isChecked())  //如果开启自动清空保存
-            {
-                on_factory_test_clear_clicked(); //清空并保持测试结果
-            }
+            factory_test_record_result = 1;
+//            if(ui->checkBox_autoclean->isChecked())  //如果开启自动清空保存
+//            {
+//                on_factory_test_clear_clicked(); //清空并保持测试结果
+//            }
             return;
         }
         remind_time--;
@@ -1956,7 +1960,7 @@ void HouseKeeperClient::on_factory_test_bt_clicked()    //开始测试
             QMessageBox::information(this,"提示","至少需要勾选一项测试选项才能开始测试");
             return;
         }
-
+        ui->remind_time_spinBox->setEnabled(false);
         factory_test_timer->start(1000);        //开始计数
         ui->remind_time_label->setText(QString::number(remind_time));
         QString msg = "--------- 出厂测试 -----------\n";
@@ -2000,6 +2004,8 @@ void HouseKeeperClient::on_factory_test_bt_clicked()    //开始测试
     }
     else
     {
+        ui->remind_time_spinBox->setEnabled(true);
+
         if(factory_test_timer->isActive())  //停止定时器
         {
             factory_test_timer->stop();
@@ -2036,6 +2042,10 @@ void HouseKeeperClient::on_factory_test_clear_clicked() //清空并保持测试�
         QString filename = "./log/";
         filename += QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss_");
         filename += QString(all_params.device_info.devid);
+        if(factory_test_record_result)
+            filename += "_成功";
+        else
+            filename += "_失败";
         filename += ".log";
 
         QFile outFile(filename);

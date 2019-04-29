@@ -316,6 +316,7 @@ private:
     unsigned char tcp_connect_flag;        //TCP连接状态
     ALL_PARAMS all_params;
     FACTORY_TEST_ST factory_test_state;       //出厂测试状态
+    int factory_test_record_result;            //出厂测试结果记录状态
 };
 
 #endif // HOUSEKEEPERCLIENT_H
