@@ -1,12 +1,19 @@
 #include "housekeeperclient.h"
 #include "ui_housekeeperclient.h"
 
+
+const char *products_id[PRODUCT_NUMS] = {  "unknow",        //未设置
+                                           "KqSPWIMl3p",    //建起塔机
+                                           "1de29pmNvL"     //土方小挖
+                                          }; //产品ID定义
+
 HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::HouseKeeperClient)
 {
     ui->setupUi(this);
-    this->setWindowTitle("二代中联盒子助手v1.3_factory");
+    this->setWindowTitle("二代中联盒子助手v1.5");
+    root_permission = isFileExist(QString("root"));
     network_connect_state = 0;
     usb_connect_state = 0;
     tcp_connect_flag = 0;        //TCP连接状态
@@ -34,13 +41,17 @@ HouseKeeperClient::HouseKeeperClient(QWidget *parent) :
     connect(tcp_client, SIGNAL(connected()), this, SLOT(tcp_client_connected())); //TCP连接成功
     connect(tcp_client, SIGNAL(disconnected()), this, SLOT(tcp_client_disconnected())); //TCP连接断开
 
-    ui->tabWidget->setTabEnabled(1,false);  //禁掉参数设置功能
-    ui->tabWidget->setTabEnabled(2,false);
-    ui->tabWidget->setTabEnabled(3,false);
-    ui->tabWidget->setTabEnabled(4,false);
-    ui->tabWidget->setTabEnabled(5,false);
-    ui->tabWidget->setTabEnabled(6,false);
-    ui->tabWidget->setTabEnabled(7,false);
+    if(!root_permission)
+    {
+        ui->tabWidget->setTabEnabled(1,false);  //禁掉参数设置等其它功能
+        ui->tabWidget->setTabEnabled(2,false);
+        ui->tabWidget->setTabEnabled(3,false);
+        ui->tabWidget->setTabEnabled(4,false);
+        ui->tabWidget->setTabEnabled(5,false);
+        ui->tabWidget->setTabEnabled(6,false);
+        ui->tabWidget->setTabEnabled(7,false);
+    }
+    init_database_record(); //初始化数据库
 }
 
 HouseKeeperClient::~HouseKeeperClient()
@@ -80,6 +91,32 @@ bool HouseKeeperClient::isFileExist(QString filepath)
         return true; //存在
     }
     return false; //不存在
+}
+
+bool HouseKeeperClient::delete_dir(QString path)
+{
+    if (path.isEmpty())
+    {
+        return false;
+    }
+    QDir dir(path);
+    if(!dir.exists()){
+        return true;
+    }
+    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot); //设置过滤
+    QFileInfoList fileList = dir.entryInfoList(); // 获取所有的文件信息
+    foreach (QFileInfo file, fileList)
+    { //遍历文件信息
+        if (file.isFile())  // 是文件，删除
+        {
+            file.dir().remove(file.fileName());
+        }
+        else     // 目录则递归删除
+        {
+            delete_dir(file.absoluteFilePath());
+        }
+    }
+    return dir.rmpath(dir.absolutePath()); // 删除文件夹
 }
 QTableWidgetItem *HouseKeeperClient::create_item(QString msg)
 {
@@ -152,7 +189,7 @@ void HouseKeeperClient::show_params(int data)
         }break;
         case ENUM_TCP_CONNECT_INFO:
         {
-            ui->params_tableWidget->setRowCount(2);
+            ui->params_tableWidget->setRowCount(3);
             ui->params_tableWidget->setColumnCount(2);
             ui->params_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);    //将表格设置为禁止编辑
             ui->params_tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);   //将表格设置为整行选择
@@ -163,6 +200,12 @@ void HouseKeeperClient::show_params(int data)
 
             ui->params_tableWidget->setItem(1,0,create_item(QString("服务器端口号")));
             ui->params_tableWidget->setItem(1,1,create_item(QString::number(all_params.tcp_connect_info.tcp_port)));
+
+            ui->params_tableWidget->setItem(2,0,create_item(QString("TCP连接状态")));
+            if(all_params.state_info.tcp_connect_state)
+                ui->params_tableWidget->setItem(2,1,create_item(QString("已连接")));
+            else
+                ui->params_tableWidget->setItem(2,1,create_item(QString("未连接")));
 
             ui->params_tableWidget->horizontalHeader()->setStretchLastSection(true);    //填充整行
         }break;
@@ -195,34 +238,82 @@ void HouseKeeperClient::show_params(int data)
         }break;
         case ENUM_STATE_INFO:
         {
-            ui->params_tableWidget->setRowCount(11);
+            ui->params_tableWidget->setRowCount(10);
             ui->params_tableWidget->setColumnCount(2);
             ui->params_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);    //将表格设置为禁止编辑
             ui->params_tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);   //将表格设置为整行选择
             ui->params_tableWidget->setHorizontalHeaderLabels(QStringList()<<"参数名称"<<"参数值");
 
             ui->params_tableWidget->setItem(0,0,create_item(QString("ACC状态")));
-            ui->params_tableWidget->setItem(0,1,create_item(QString::number(all_params.state_info.acc_state)));
+            if(all_params.state_info.acc_state)
+                ui->params_tableWidget->setItem(0,1,create_item(QString("ON")));
+            else
+                ui->params_tableWidget->setItem(0,1,create_item(QString("OFF")));
+
             ui->params_tableWidget->setItem(1,0,create_item(QString("总线状态")));
-            ui->params_tableWidget->setItem(1,1,create_item(QString::number(all_params.state_info.bus_connect_state)));
+            if(all_params.state_info.bus_connect_state)
+                ui->params_tableWidget->setItem(1,1,create_item(QString("正常")));
+            else
+                ui->params_tableWidget->setItem(1,1,create_item(QString("故障")));
+
             ui->params_tableWidget->setItem(2,0,create_item(QString("充电状态")));
-            ui->params_tableWidget->setItem(2,1,create_item(QString::number(all_params.state_info.charge_state)));
+            if(all_params.state_info.charge_state)
+                ui->params_tableWidget->setItem(2,1,create_item(QString("充电中")));
+            else
+                ui->params_tableWidget->setItem(2,1,create_item(QString("未充电")));
+
             ui->params_tableWidget->setItem(3,0,create_item(QString("设备连接状态")));
-            ui->params_tableWidget->setItem(3,1,create_item(QString::number(all_params.state_info.dev_link_state)));
+            if(all_params.state_info.dev_link_state == 0)
+                ui->params_tableWidget->setItem(3,1,create_item(QString("初始化检测中")));
+            else if(all_params.state_info.dev_link_state == 1)
+                ui->params_tableWidget->setItem(3,1,create_item(QString("IOT与QNX连接正常")));
+            else if(all_params.state_info.dev_link_state == 2)
+                ui->params_tableWidget->setItem(3,1,create_item(QString("IOT与QNX连接断开")));
+            else if(all_params.state_info.dev_link_state == 3)
+                ui->params_tableWidget->setItem(3,1,create_item(QString("AD板与PLC断开")));
+            else if(all_params.state_info.dev_link_state == 4)
+                ui->params_tableWidget->setItem(3,1,create_item(QString("AD板与QNX断开")));
+
             ui->params_tableWidget->setItem(4,0,create_item(QString("拨号状态")));
-            ui->params_tableWidget->setItem(4,1,create_item(QString::number(all_params.state_info.dial_state)));
+            if(all_params.state_info.dial_state)
+                ui->params_tableWidget->setItem(4,1,create_item(QString("拨号成功")));
+            else
+                ui->params_tableWidget->setItem(4,1,create_item(QString("拨号失败，重试中")));
+
             ui->params_tableWidget->setItem(5,0,create_item(QString("GPS天线状态")));
-            ui->params_tableWidget->setItem(5,1,create_item(QString::number(all_params.state_info.gps_antena)));
+            if(all_params.state_info.gps_antena == 1)
+                ui->params_tableWidget->setItem(5,1,create_item(QString("正常")));
+            else if(all_params.state_info.gps_antena == 2)
+                ui->params_tableWidget->setItem(5,1,create_item(QString("未连接")));
+            else if(all_params.state_info.gps_antena == 3)
+                ui->params_tableWidget->setItem(5,1,create_item(QString("故障")));
+            else
+                ui->params_tableWidget->setItem(5,1,create_item(QString("未知状态")));
+
             ui->params_tableWidget->setItem(6,0,create_item(QString("GPS定位状态")));
-            ui->params_tableWidget->setItem(6,1,create_item(QString::number(all_params.state_info.gps_state)));
+            if(all_params.state_info.gps_state)
+                ui->params_tableWidget->setItem(6,1,create_item(QString("已定位")));
+            else
+                ui->params_tableWidget->setItem(6,1,create_item(QString("未定位")));
+
             ui->params_tableWidget->setItem(7,0,create_item(QString("开盖状态")));
-            ui->params_tableWidget->setItem(7,1,create_item(QString::number(all_params.state_info.liq_state)));
+            if(all_params.state_info.liq_state)
+                ui->params_tableWidget->setItem(7,1,create_item(QString("开盖")));
+            else
+                ui->params_tableWidget->setItem(7,1,create_item(QString("关盖")));
+
+
             ui->params_tableWidget->setItem(8,0,create_item(QString("服务器登录状态")));
-            ui->params_tableWidget->setItem(8,1,create_item(QString::number(all_params.state_info.login_state)));
+            if(all_params.state_info.login_state)
+                ui->params_tableWidget->setItem(8,1,create_item(QString("已登录")));
+            else
+                ui->params_tableWidget->setItem(8,1,create_item(QString("未登录")));
+
             ui->params_tableWidget->setItem(9,0,create_item(QString("SIM卡状态")));
-            ui->params_tableWidget->setItem(9,1,create_item(QString::number(all_params.state_info.simcard_state)));
-            ui->params_tableWidget->setItem(10,0,create_item(QString("TCP连接状态")));
-            ui->params_tableWidget->setItem(10,1,create_item(QString::number(all_params.state_info.tcp_connect_state)));
+            if(all_params.state_info.simcard_state)
+                ui->params_tableWidget->setItem(9,1,create_item(QString("正常")));
+            else
+                ui->params_tableWidget->setItem(9,1,create_item(QString("未检测到或SIM卡故障")));
 
             ui->params_tableWidget->horizontalHeader()->setStretchLastSection(true);    //填充整行
         }break;
@@ -714,7 +805,7 @@ void HouseKeeperClient::parse_get_factory_param_reply(cJSON *root)
                 char *tmp = cJSON_GetArrayItem(factory_params,0)->valuestring;
                 for(int i=0; i<ui->product_id_factory->count(); i++)
                 {
-                    if(ui->product_id_factory->itemText(i) == QString(tmp))
+                    if( !strcmp(products_id[i], tmp) )
                     {
                         exist_flag = 1;
                         ui->product_id_factory->setCurrentIndex(i);
@@ -722,7 +813,7 @@ void HouseKeeperClient::parse_get_factory_param_reply(cJSON *root)
                 }
                 if(exist_flag == 0)
                 {
-                    ui->product_id_factory->setCurrentText(QString(tmp));
+                    ui->product_id_factory->setCurrentIndex(0);
                 }
                 tmp = cJSON_GetArrayItem(factory_params,1)->valuestring;
                 ui->sim_number_factory->setText(QString(tmp));
@@ -745,6 +836,7 @@ void HouseKeeperClient::parse_set_factory_param_reply(cJSON *root)
         }
         else
         {
+            insert_database_record(ui->dev_id_factory->text().trimmed());   //设置成功，记录至数据库中
             QMessageBox::information(this,"提示","配置成功");
             ui->product_id_factory->setCurrentIndex(0);
             ui->sim_number_factory->clear();
@@ -945,11 +1037,93 @@ void HouseKeeperClient::candata_proc_for_test()
         set_factory_test_state(CAN_BUS_DETECT);
 }
 
+void HouseKeeperClient::init_database_record()
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "sqlite3");
+    if( isFileExist("./database.db") )  //数据库文件存在
+    {
+        db.setDatabaseName("./database.db");
+        db.open();  //打开数据库文件
+        qDebug() <<"打开数据库成功！";
+    }
+    else
+    {
+        db.setDatabaseName("./database.db");
+        db.open();  //打开数据库文件
+        QSqlQuery query(db);
+        bool success = query.exec("CREATE TABLE ID_RECORD("
+                                  "DEV_ID CHAR(32));");            //创建表
+        if(success)
+            qDebug() <<"数据库表创建成功！";
+        else
+            qDebug() <<"数据库表创建失败！";
+    }
+}
+
+bool HouseKeeperClient::check_database_record(QString devid) //检查数据库中记录
+{
+    int exist_flag = 0;
+    QSqlDatabase db = QSqlDatabase::database("sqlite3"); //建立数据库连接
+    QSqlQuery query(db);
+    query.exec("select * from ID_RECORD");
+    QSqlRecord rec = query.record();
+    qDebug() << "ID_RECORD表字段数："<< rec.count();
+    while(query.next())
+    {
+        if(devid == query.value(0).toString())  //如果ID已经烧写过
+        {
+            qDebug() <<"DEVID:"<<query.value(0).toString();
+            exist_flag = 1;
+            break;
+        }
+    }
+
+    if(exist_flag)  //已经烧写过
+    {
+        int ret = QMessageBox::information(this,"提示","该设备ID已经烧录至其他设备，是否继续烧录？",QMessageBox::Yes|QMessageBox::No,QMessageBox::No); //
+        qDebug()<<"Yes = "<<QMessageBox::Yes<<endl<<"NO:"<<QMessageBox::No;
+        if(ret == QMessageBox::Yes) //继续烧录
+            return true;
+        else if(ret == QMessageBox::No)
+            return false;
+
+    }
+    else        //没有烧写过
+        return true;
+}
+
+void HouseKeeperClient::insert_database_record(QString devid)
+{
+    QSqlDatabase db = QSqlDatabase::database("sqlite3"); //建立数据库连接
+    QSqlQuery query(db);
+    query.exec("select * from ID_RECORD");
+    QSqlRecord rec = query.record();
+    qDebug() << "ID_RECORD表字段数："<< rec.count();
+    while(query.next())
+    {
+        if(devid == query.value(0).toString())  //如果ID已经烧写过
+        {
+            qDebug() <<"DEVID:"<<query.value(0).toString();
+            return;
+        }
+    }
+
+    query.prepare("INSERT INTO ID_RECORD VALUES ( ? );");
+    query.bindValue(0, devid);
+    bool ret=query.exec();
+    if(!ret)
+    {
+        QSqlError lastError = query.lastError();
+        qDebug() << lastError.driverText() << QString(QObject::tr("插入失败"));
+    }else
+        qDebug() <<"插入成功";
+}
+
 void HouseKeeperClient::update_time()
 {
     QString time_str = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     ui->now_time->setText(time_str);
-    if(all_params.state_info.dial_state)
+    if(all_params.state_info.dial_state && tcp_connect_flag)
         ui->net_status->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/网络正常.png);"));
     else
         ui->net_status->setStyleSheet(QString("border-image: url(:/new/prefix1/pictures/网络断开.png);"));
@@ -1311,6 +1485,13 @@ void HouseKeeperClient::update_adb_driver_state()
 
 void HouseKeeperClient::on_return_home_clicked()
 {
+    if(ui->stackedWidget->currentIndex() == DEV_ID_WRITE) //返回则清空
+    {
+        ui->product_id_factory->setCurrentIndex(0);
+        ui->sim_number_factory->clear();
+        ui->dev_id_factory->clear();
+    }
+
     ui->stackedWidget->setCurrentIndex(FIRST_PAGE);
 }
 
@@ -1362,8 +1543,11 @@ void HouseKeeperClient::on_dev_manage_clicked()
 
 void HouseKeeperClient::on_upgrade_package_clicked()
 {
-    QMessageBox::information(this,"提示","敬请期待");
-    //ui->stackedWidget->setCurrentIndex(UPGRADE_PACKAGE);
+    if(root_permission)
+        ui->stackedWidget->setCurrentIndex(UPGRADE_PACKAGE);
+    else
+        QMessageBox::information(this,"提示","需获取管理员权限");
+
 }
 
 void HouseKeeperClient::on_param_type_currentIndexChanged(int index)
@@ -1889,39 +2073,42 @@ void HouseKeeperClient::on_change_id_setting_clicked()
 
     if(tcp_connect_flag)
     {
-        cJSON *root = cJSON_CreateObject();
-        cJSON_AddStringToObject(root,"data_type","factory_params_set");  //设置出厂配置参数
-        int nums = 3;
-        cJSON_AddNumberToObject(root,"param_nums", nums);  //参数个数
-        cJSON *ini_array = cJSON_CreateArray();
-        cJSON *selection_array = cJSON_CreateArray();
-        cJSON *key_array = cJSON_CreateArray();
-        cJSON *data_value = cJSON_CreateArray();
+        if( check_database_record(ui->dev_id_factory->text().trimmed()) )
+        {
+            cJSON *root = cJSON_CreateObject();
+            cJSON_AddStringToObject(root,"data_type","factory_params_set");  //设置出厂配置参数
+            int nums = 3;
+            cJSON_AddNumberToObject(root,"param_nums", nums);  //参数个数
+            cJSON *ini_array = cJSON_CreateArray();
+            cJSON *selection_array = cJSON_CreateArray();
+            cJSON *key_array = cJSON_CreateArray();
+            cJSON *data_value = cJSON_CreateArray();
 
-        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/remote_manage.ini"));
-        cJSON_AddItemToArray(selection_array, cJSON_CreateString("OTHER_CFG"));
-        cJSON_AddItemToArray(key_array, cJSON_CreateString("product_id"));
-        cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->product_id_factory->currentText().trimmed().toLocal8Bit().data()));
+            cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/remote_manage.ini"));
+            cJSON_AddItemToArray(selection_array, cJSON_CreateString("OTHER_CFG"));
+            cJSON_AddItemToArray(key_array, cJSON_CreateString("product_id"));
+            cJSON_AddItemToArray(data_value, cJSON_CreateString(products_id[ui->product_id_factory->currentIndex()]));
 
-        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/zlcfg.ini"));
-        cJSON_AddItemToArray(selection_array, cJSON_CreateString("TCPC_CFG_THEME"));
-        cJSON_AddItemToArray(key_array, cJSON_CreateString("sim_num"));
-        cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->sim_number_factory->text().trimmed().toLocal8Bit().data()));
+            cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/zlcfg.ini"));
+            cJSON_AddItemToArray(selection_array, cJSON_CreateString("TCPC_CFG_THEME"));
+            cJSON_AddItemToArray(key_array, cJSON_CreateString("sim_num"));
+            cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->sim_number_factory->text().trimmed().toLocal8Bit().data()));
 
-        cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/syscfg.ini"));
-        cJSON_AddItemToArray(selection_array, cJSON_CreateString("INIT_PARAM_THEME"));
-        cJSON_AddItemToArray(key_array, cJSON_CreateString("dev_id"));
-        cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->dev_id_factory->text().trimmed().toLocal8Bit().data()));
+            cJSON_AddItemToArray(ini_array, cJSON_CreateString("/usrdata/service/etc/syscfg.ini"));
+            cJSON_AddItemToArray(selection_array, cJSON_CreateString("INIT_PARAM_THEME"));
+            cJSON_AddItemToArray(key_array, cJSON_CreateString("dev_id"));
+            cJSON_AddItemToArray(data_value, cJSON_CreateString(ui->dev_id_factory->text().trimmed().toLocal8Bit().data()));
 
-        cJSON_AddItemToObject(root, "ini_name", ini_array);     //添加数组
-        cJSON_AddItemToObject(root, "selection_name", selection_array);
-        cJSON_AddItemToObject(root, "key_name", key_array);
-        cJSON_AddItemToObject(root, "data_value", data_value);
+            cJSON_AddItemToObject(root, "ini_name", ini_array);     //添加数组
+            cJSON_AddItemToObject(root, "selection_name", selection_array);
+            cJSON_AddItemToObject(root, "key_name", key_array);
+            cJSON_AddItemToObject(root, "data_value", data_value);
 
-        char *data = cJSON_PrintUnformatted(root);
-        qDebug("factory_params_set = %s",data);
-        tcp_client->write(data, strlen(data));
-        cJSON_Delete(root);
+            char *data = cJSON_PrintUnformatted(root);
+            qDebug("factory_params_set = %s",data);
+            tcp_client->write(data, strlen(data));
+            cJSON_Delete(root);
+        }
     }
     else
     {
@@ -2053,5 +2240,168 @@ void HouseKeeperClient::on_factory_test_clear_clicked() //清空并保持测试�
         QTextStream save_text(&outFile);
         save_text << record << endl;        //保存测试记录
         ui->factory_test_result->clear();
+    }
+}
+
+void HouseKeeperClient::on_app_upgrade_dir_bt_clicked()
+{
+    QString dirpath = QFileDialog::getExistingDirectory(this,"选择升级程序目录","./",QFileDialog::ShowDirsOnly);
+    ui->app_upgrade_dir->setText(dirpath);
+}
+
+void HouseKeeperClient::on_app_name_bt_clicked()
+{
+    QString dirpath = QFileDialog::getOpenFileName(this,"选择边缘应用可执行文件(应用名称默认与可执行文件同名)","./");
+    int index = 0;
+    for(int i=0; i<dirpath.length();i++)
+    {
+        if(dirpath.at(i) == '/')
+            index = i;
+    }
+    dirpath = dirpath.mid(index+1,dirpath.length()-1);
+    ui->app_name->setText(dirpath);
+}
+
+void HouseKeeperClient::on_app_output_path_bt_clicked()
+{
+    QString dirpath = QFileDialog::getExistingDirectory(this,"选择升级包输出目录","./",QFileDialog::ShowDirsOnly);
+    ui->app_output_path->setText(dirpath);
+}
+
+void HouseKeeperClient::on_service_upgrade_dir_bt_clicked()
+{
+    QString dirpath = QFileDialog::getExistingDirectory(this,"选择升级程序目录","./",QFileDialog::ShowDirsOnly);
+    ui->service_upgrade_dir->setText(dirpath);
+}
+
+void HouseKeeperClient::on_service_output_path_bt_clicked()
+{
+    QString dirpath = QFileDialog::getExistingDirectory(this,"选择升级包输出目录","./",QFileDialog::ShowDirsOnly);
+    ui->service_output_path->setText(dirpath);
+}
+
+void HouseKeeperClient::on_package_type_currentIndexChanged(int index)
+{
+    ui->stackedWidget_upgrade_type->setCurrentIndex(index);
+}
+
+void HouseKeeperClient::on_pushButton_clicked()
+{
+    if(ui->stackedWidget_upgrade_type->currentIndex() == 0 )      //打包应用程序
+    {
+        if(ui->app_upgrade_dir->text().isEmpty())
+        {
+            QMessageBox::information(this,"提示","请选择升级文件目录");
+            return;
+        }
+        if(ui->app_name->text().isEmpty())
+        {
+            QMessageBox::information(this,"提示","请选择边缘应用可执行程序");
+            return;
+        }
+        if(ui->app_output_path->text().isEmpty())
+        {
+            QMessageBox::information(this,"提示","请选择升级包输出目录");
+            return;
+        }
+
+        QDir dir;
+        QString app_name = ui->app_name->text();
+        qDebug()<<"appname = "<<app_name;
+
+        QString app_path =  ui->app_upgrade_dir->text();
+        app_path += "\\*";
+        dir.mkpath(app_name); //创建目录
+        Sleep(1);
+
+        app_path = app_path.replace("/","\\");
+
+        QProcess *process = NULL;
+        process = new QProcess(this);
+        QString  cmd_format = "xcopy ";
+        cmd_format += app_path;
+        cmd_format += " ";
+        cmd_format += app_name;
+        cmd_format += " /E";
+        qDebug()<<"copy cmd :"<<cmd_format;
+
+        process->start(cmd_format);
+        process->waitForFinished(); //等待执行完成
+        qDebug()<<"Result:"<<process->readAll();
+
+
+        cmd_format = "7za.exe a -ttar app.tar \"";
+        cmd_format += app_name;
+        qDebug()<<"cmd = "<<cmd_format;
+
+        process->start(cmd_format);
+        process->waitForFinished(); //等待执行完成
+        qDebug()<<"Result:"<<process->readAll();
+
+        QString now_time_str = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss_");
+        cmd_format = "7za.exe a -tgzip ";
+        cmd_format += ui->app_output_path->text();
+        cmd_format += "/";
+        cmd_format += now_time_str;
+        cmd_format += "app.tar.gz";
+        cmd_format += " app.tar";
+        qDebug()<<"cmd = "<<cmd_format;
+
+        process->start(cmd_format);
+        process->waitForFinished(); //等待执行完成
+        qDebug()<<"Result:"<<process->readAll();
+
+
+        QFile::remove("app.tar"); //删除归档文件
+
+        QString cur_path = QDir::currentPath();
+        QString del_dir_path = cur_path + "/" + app_name;
+        delete_dir(del_dir_path);
+
+        process->deleteLater();
+
+        QMessageBox::information(this,"提示","边缘应用升级包打包成功");
+    }
+    else if(ui->stackedWidget_upgrade_type->currentIndex() == 1 ) //打包服务程序
+    {
+        if(ui->service_upgrade_dir->text().isEmpty())
+        {
+            QMessageBox::information(this,"提示","请选择升级文件目录");
+            return;
+        }
+        if(ui->service_output_path->text().isEmpty())
+        {
+            QMessageBox::information(this,"提示","请选择升级包输出目录");
+            return;
+        }
+
+        QProcess *process = NULL;
+    //  QString  cmd_format = "7za.exe --help";
+        QString  cmd_format = "7za.exe a -ttar service.tar \"";
+        cmd_format += ui->service_upgrade_dir->text();
+        cmd_format += "/*";
+        qDebug()<<"cmd = "<<cmd_format;
+        process = new QProcess(this);
+
+        process->start(cmd_format);
+        process->waitForFinished(); //等待执行完成
+        qDebug()<<"Result:"<<process->readAll();
+
+        QString now_time_str = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss_");
+        cmd_format = "7za.exe a -tgzip ";
+        cmd_format += ui->service_output_path->text();
+        cmd_format += "/";
+        cmd_format += now_time_str;
+        cmd_format += "service.tar.gz";
+        cmd_format += " service.tar";
+        qDebug()<<"cmd = "<<cmd_format;
+
+        process->start(cmd_format);
+        process->waitForFinished(); //等待执行完成
+        qDebug()<<"Result:"<<process->readAll();
+        process->deleteLater();
+
+        QFile::remove("service.tar"); //删除归档文件
+        QMessageBox::information(this,"提示","终端服务程序升级包打包成功");
     }
 }

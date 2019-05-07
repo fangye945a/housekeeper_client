@@ -12,7 +12,7 @@ detect_connect::detect_connect()
 void detect_connect::run()
 {
     qDebug()<<"Create pthread!!";
-    QString usb_cmd = "adb devices";
+    QString usb_cmd = "adb";
     QString usb_port_forward = "adb forward tcp:10086 tcp:10086";
     QString network_cmd = "ping www.baidu.com -n 2 -w 500";
     while(flagRunning)
@@ -24,7 +24,7 @@ void detect_connect::run()
             network_process = new QProcess();
 
 
-        usb_process->start(usb_cmd);
+        usb_process->start(usb_cmd, QStringList()<<"devices");
         usb_process->waitForFinished();
         QString result = usb_process->readAll();
         qDebug()<<"result:"<<result;

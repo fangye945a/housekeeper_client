@@ -1024,12 +1024,15 @@ background-color: rgba(255, 255, 255, 220);
 font: 25 24pt &quot;Microsoft YaHei UI Light&quot;;</string>
                   </property>
                   <property name="text">
-                   <string>产品ID:</string>
+                   <string>设备类型:</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QComboBox" name="product_id_factory">
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
                   <property name="styleSheet">
                    <string notr="true">font: 24pt &quot;宋体&quot;;
 color: rgb(12, 158, 255);
@@ -1040,12 +1043,17 @@ background-color: rgb(231, 231, 231);</string>
                   </property>
                   <item>
                    <property name="text">
-                    <string>Unknow</string>
+                    <string>未设置</string>
                    </property>
                   </item>
                   <item>
                    <property name="text">
-                    <string>TBOX-X3</string>
+                    <string>建起塔机</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>土方小挖</string>
                    </property>
                   </item>
                  </widget>
@@ -1775,6 +1783,9 @@ background-color: rgba(255, 255, 255, 220);
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::NoFocus</enum>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true">font: 14pt &quot;宋体&quot;;
 color: rgb(0, 0, 0);
@@ -1988,7 +1999,7 @@ QPushButton:hover
                     <item>
                      <widget class="QComboBox" name="ini_filename">
                       <property name="focusPolicy">
-                       <enum>Qt::StrongFocus</enum>
+                       <enum>Qt::NoFocus</enum>
                       </property>
                       <property name="layoutDirection">
                        <enum>Qt::LeftToRight</enum>
@@ -2103,6 +2114,9 @@ background-color: rgb(231, 231, 231);</string>
                     </item>
                     <item>
                      <widget class="QComboBox" name="selection_name">
+                      <property name="focusPolicy">
+                       <enum>Qt::NoFocus</enum>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true">font: 16pt &quot;微软雅黑&quot;;
 color: rgb(0, 0, 0);
@@ -2164,6 +2178,9 @@ background-color: rgb(231, 231, 231);</string>
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
+                      </property>
+                      <property name="focusPolicy">
+                       <enum>Qt::NoFocus</enum>
                       </property>
                       <property name="styleSheet">
                        <string notr="true">font: 16pt &quot;微软雅黑&quot;;
@@ -2632,6 +2649,416 @@ background-color: rgba(255, 255, 255, 220);
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,10,1,1,1">
+            <item>
+             <spacer name="verticalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>23</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_43">
+              <item>
+               <spacer name="horizontalSpacer_52">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_12">
+                <item>
+                 <widget class="QLabel" name="label_11">
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(0, 0, 0);
+font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                  </property>
+                  <property name="text">
+                   <string>选择升级类型</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="package_type">
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">font: 16pt &quot;宋体&quot;;
+color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>边缘应用程序</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>终端服务程序</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_53">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_42" stretch="1,3,1">
+              <item>
+               <spacer name="horizontalSpacer_50">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QStackedWidget" name="stackedWidget_upgrade_type">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="page_11">
+                 <layout class="QGridLayout" name="gridLayout_12">
+                  <item row="0" column="0">
+                   <layout class="QHBoxLayout" name="horizontalLayout_13">
+                    <item>
+                     <widget class="QLabel" name="label_15">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                      </property>
+                      <property name="text">
+                       <string>升级文件目录</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="app_upgrade_dir">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="app_upgrade_dir_bt">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <layout class="QHBoxLayout" name="horizontalLayout_40">
+                    <item>
+                     <widget class="QLabel" name="label_16">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                      </property>
+                      <property name="text">
+                       <string>边缘应用可执行程序</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="app_name">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="app_name_bt">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="2" column="0">
+                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                    <item>
+                     <widget class="QLabel" name="label_17">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                      </property>
+                      <property name="text">
+                       <string>升级包输出路径</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="app_output_path">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="app_output_path_bt">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="page_12">
+                 <layout class="QGridLayout" name="gridLayout_13">
+                  <item row="0" column="0">
+                   <layout class="QHBoxLayout" name="horizontalLayout_44">
+                    <item>
+                     <widget class="QLabel" name="label_18">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                      </property>
+                      <property name="text">
+                       <string>升级文件目录</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="service_upgrade_dir">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="service_upgrade_dir_bt">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <layout class="QHBoxLayout" name="horizontalLayout_45">
+                    <item>
+                     <widget class="QLabel" name="label_34">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+font: 25 16pt &quot;Microsoft YaHei UI Light&quot;;</string>
+                      </property>
+                      <property name="text">
+                       <string>升级包输出路径</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="service_output_path">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="service_output_path_bt">
+                      <property name="styleSheet">
+                       <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(231, 231, 231);</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_51">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_18">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>23</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_41">
+              <item>
+               <spacer name="horizontalSpacer_48">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>60</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton:enabled
+{
+	border-radius: 10px;
+	color: rgb(255, 255, 255);
+	font: 75 16pt &quot;Microsoft YaHei UI&quot;;
+	background-color: rgba(189, 0, 189,255);
+}
+QPushButton:hover
+{
+    border-radius: 10px;
+	color: rgb(255, 255, 255);
+	font: 75 16pt &quot;Microsoft YaHei UI&quot;;
+	background-color: rgba(189, 0, 189,220);
+}</string>
+                </property>
+                <property name="text">
+                 <string>生成升级包</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_49">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_19">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>23</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>

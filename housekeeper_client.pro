@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += network
 QT       += serialport
-
+QT       += sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = housekeeper_client

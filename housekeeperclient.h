@@ -1,3 +1,4 @@
+void on_app_upgrade_dir_bt_clicked();
 #ifndef HOUSEKEEPERCLIENT_H
 #define HOUSEKEEPERCLIENT_H
 
@@ -18,6 +19,16 @@
 #include <QTableWidgetItem>
 #include <QMessageBox>
 
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlDriver>
+#include <QtSql/QSqlRecord>
+#include <QtSql/QSqlError>
+
+#include <QFileDialog>
+#include <QDir>
+#include <windows.h>
+
 #include "detect_connect.h"
 #include "cJSON.h"
 
@@ -26,6 +37,7 @@
 
 #define MAX_MESSAGE_LEN 2048 //最大json长度
 
+#define PRODUCT_NUMS 3 //产品ID个数
 
 typedef struct _VOLTAGE_INFO
 {
@@ -227,6 +239,7 @@ public:
     void mouseDoubleClickEvent(QMouseEvent *event); //鼠标双击事件
 
     bool isFileExist(QString filepath);             //判断文件是否存在
+    bool delete_dir(QString path);                  //删除目录
     void show_params(int data);                             //显示参数
     void parse_all_params_data(cJSON *root);               //解析所有参数
     void parse_can_data(cJSON *root);                      //解析CAN数据
@@ -241,6 +254,9 @@ public:
     void set_factory_test_state(int type);   //设置测试结果
     void all_params_proc_for_test();   //出厂测试参数处理
     void candata_proc_for_test();   //出厂测试can数据处理
+    void init_database_record();        //初始化数据库
+    bool check_database_record(QString devid);        //检查数据库中是否存在该DEVID
+    void insert_database_record(QString devid);        //将烧写过的DEVID插入数据库
 
     QTableWidgetItem *create_item(QString msg);
 public slots:
@@ -303,8 +319,23 @@ private slots:
 
     void on_factory_test_clear_clicked();
 
+    void on_app_name_bt_clicked();
+
+    void on_app_output_path_bt_clicked();
+
+    void on_service_upgrade_dir_bt_clicked();
+
+    void on_service_output_path_bt_clicked();
+
+    void on_package_type_currentIndexChanged(int index);
+
+    void on_app_upgrade_dir_bt_clicked();
+
+    void on_pushButton_clicked();
+
 private:
     Ui::HouseKeeperClient *ui;
+    int root_permission;
     int remind_time;                //剩余时间
     QTimer *update_time_timer;
     QTimer *factory_test_timer;     //出厂测试定时器
